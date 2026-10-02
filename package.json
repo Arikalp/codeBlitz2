@@ -13,6 +13,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/uuid": "^10.0.0",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "jose": "^6.2.12",
     "lucide-react": "^1.50.0",
     "mongoose": "^9.10.3",

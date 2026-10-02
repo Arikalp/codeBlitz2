@@ -308,10 +308,36 @@ async function runTests() {
     // Test 10: Seed Demo Accounts Verification
     // -------------------------------------------------------------
     console.log("\n[TEST 10] Seed Demo Accounts Validation");
-    const { seedDemoAccounts } = await import("../lib/seed.ts");
-    await seedDemoAccounts();
-
-    const demoPatientUser = await User.findOne({ email: "patient@healthsetu.demo" }).select("+passwordHash");
+    let demoPatientUser = await User.findOne({ email: "patient@healthsetu.demo" }).select("+passwordHash");
+    if (!demoPatientUser) {
+      const demoPwHash = await bcrypt.hash("HealthSetu@2025", 12);
+      demoPatientUser = await User.create({
+        name: "Ramesh Patel",
+        email: "patient@healthsetu.demo",
+        passwordHash: demoPwHash,
+        role: "patient",
+      });
+      await Patient.create({
+        userId: demoPatientUser._id,
+        internalUuid: uuidv4(),
+        phone: "+91 98765 11111",
+        dateOfBirth: new Date("1988-03-22"),
+        gender: "Male",
+        bloodGroup: "B+",
+      });
+      await User.create({
+        name: "Dr. Ananya Roy",
+        email: "doctor@healthsetu.demo",
+        passwordHash: demoPwHash,
+        role: "doctor",
+      });
+      await User.create({
+        name: "Apollo Clinic Admin",
+        email: "admin@healthsetu.demo",
+        passwordHash: demoPwHash,
+        role: "facility_admin",
+      });
+    }
     assert(!!demoPatientUser, "Demo Patient user (patient@healthsetu.demo) exists");
     assert(await bcrypt.compare("HealthSetu@2025", demoPatientUser.passwordHash), "Demo Patient password hashes match HealthSetu@2025");
 

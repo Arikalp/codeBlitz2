@@ -4,7 +4,7 @@
  * Compact status badge with colour-coded variants.
  */
 
-import type { RecordCategory, ConsentStatus, DocumentStatus } from "@/lib/mock-data";
+import type { ConsentStatus, DocumentStatus } from "@/lib/mock-data";
 
 type BadgeVariant = "success" | "warning" | "error" | "info" | "neutral" | "purple";
 
@@ -39,17 +39,21 @@ export default function StatusBadge({ label, variant, className = "" }: StatusBa
 
 // ─── Category helpers ──────────────────────────────────────────────────────
 
-export function categoryBadge(category: RecordCategory) {
-  const map: Record<RecordCategory, { label: string; variant: BadgeVariant }> = {
-    prescription:    { label: "Prescription",    variant: "info" },
-    lab_report:      { label: "Lab Report",      variant: "purple" },
-    imaging:         { label: "Imaging",         variant: "warning" },
-    discharge_summary: { label: "Discharge",     variant: "neutral" },
-    vaccination:     { label: "Vaccination",     variant: "success" },
-    consultation:    { label: "Consultation",    variant: "neutral" },
+export function categoryBadge(category: string) {
+  const map: Record<string, { label: string; variant: BadgeVariant }> = {
+    prescription:      { label: "Prescription",     variant: "info" },
+    lab_report:        { label: "Lab Report",       variant: "purple" },
+    ct_mri_report:     { label: "CT & MRI Report",  variant: "warning" },
+    xray_report:       { label: "X-ray Report",     variant: "warning" },
+    imaging:           { label: "Imaging",          variant: "warning" },
+    discharge_summary: { label: "Discharge Summary",variant: "neutral" },
+    consultation_note: { label: "Consultation Note",variant: "neutral" },
+    consultation:      { label: "Consultation",     variant: "neutral" },
+    vaccination:       { label: "Vaccination",      variant: "success" },
+    other:             { label: "Other Document",   variant: "neutral" },
   };
-  const { label, variant } = map[category];
-  return <StatusBadge label={label} variant={variant} />;
+  const item = map[category] || { label: category.replace(/_/g, " "), variant: "neutral" };
+  return <StatusBadge label={item.label} variant={item.variant} />;
 }
 
 export function consentBadge(status: ConsentStatus) {

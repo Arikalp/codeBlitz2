@@ -16,34 +16,51 @@ import {
   UserRound,
   ChevronRight,
 } from "lucide-react";
-import type { MedicalRecord, RecordCategory } from "@/lib/mock-data";
 import { categoryBadge } from "@/components/ui/StatusBadge";
 
-const CATEGORY_ICONS: Record<RecordCategory, typeof FileText> = {
-  prescription:     ClipboardList,
-  lab_report:       FlaskConical,
-  imaging:          Scan,
+const CATEGORY_ICONS: Record<string, typeof FileText> = {
+  prescription:      ClipboardList,
+  lab_report:        FlaskConical,
+  ct_mri_report:     Scan,
+  xray_report:       Scan,
+  imaging:           Scan,
   discharge_summary: FileText,
-  vaccination:      Syringe,
-  consultation:     Stethoscope,
+  consultation_note: Stethoscope,
+  vaccination:       Syringe,
+  consultation:      Stethoscope,
+  other:             FileText,
 };
 
-const CATEGORY_COLORS: Record<RecordCategory, string> = {
-  prescription:     "bg-blue-50 text-blue-600",
-  lab_report:       "bg-violet-50 text-violet-600",
-  imaging:          "bg-amber-50 text-amber-600",
+const CATEGORY_COLORS: Record<string, string> = {
+  prescription:      "bg-blue-50 text-blue-600",
+  lab_report:        "bg-violet-50 text-violet-600",
+  ct_mri_report:     "bg-amber-50 text-amber-600",
+  xray_report:       "bg-amber-50 text-amber-600",
+  imaging:           "bg-amber-50 text-amber-600",
   discharge_summary: "bg-slate-100 text-slate-600",
-  vaccination:      "bg-emerald-50 text-emerald-600",
-  consultation:     "bg-teal-50 text-teal-600",
+  consultation_note: "bg-teal-50 text-teal-600",
+  vaccination:       "bg-emerald-50 text-emerald-600",
+  consultation:      "bg-teal-50 text-teal-600",
+  other:             "bg-gray-100 text-gray-600",
 };
 
 interface MedicalRecordCardProps {
-  record: MedicalRecord;
+  record: {
+    id: string;
+    category: string;
+    title: string;
+    facility: string;
+    doctor?: string;
+    clinicalDate: string;
+    summary: string;
+    tags?: string[];
+    hasDocument?: boolean;
+  };
   onClick?: () => void;
 }
 
 export default function MedicalRecordCard({ record, onClick }: MedicalRecordCardProps) {
-  const Icon = CATEGORY_ICONS[record.category];
+  const Icon = CATEGORY_ICONS[record.category] || FileText;
 
   return (
     <button
@@ -55,7 +72,7 @@ export default function MedicalRecordCard({ record, onClick }: MedicalRecordCard
       <div
         className={[
           "flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-xl",
-          CATEGORY_COLORS[record.category],
+          CATEGORY_COLORS[record.category] || "bg-gray-50 text-gray-600",
         ].join(" ")}
         aria-hidden="true"
       >
