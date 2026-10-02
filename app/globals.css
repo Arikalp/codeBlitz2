@@ -1,61 +1,101 @@
 /* ──────────────────────────────────────────────────────────────────────────
    app/globals.css
    Global stylesheet for HealthSetu.
-   Uses Tailwind CSS v4 @import convention plus custom design tokens.
+   Soft Clinical Light Theme.
 ────────────────────────────────────────────────────────────────────────── */
 
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-/* ─── Design Tokens ─────────────────────────────────────────────────────── */
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Typography */
+  /* Typography - JetBrains Mono for display/headings */
   --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-jetbrains-mono), monospace;
+  --font-mono: var(--font-jetbrains-mono), monospace;
 
-  /* Brand colours */
-  --color-brand-50:  #eef7ff;
-  --color-brand-100: #d8edff;
-  --color-brand-200: #b9ddff;
-  --color-brand-300: #88c6ff;
-  --color-brand-400: #50a6ff;
-  --color-brand-500: #2481fb;
-  --color-brand-600: #0d61f0;
-  --color-brand-700: #0d4ad6;
-  --color-brand-800: #113cac;
-  --color-brand-900: #143888;
+  /* Landing Page Compatibility Tokens */
+  --color-brand-50: var(--primary-tint);
+  --color-brand-200: var(--border);
+  --color-brand-300: var(--primary);
+  --color-brand-500: var(--primary);
+  --color-brand-600: var(--primary);
+  --color-brand-700: var(--foreground);
+  --color-accent-500: var(--secondary);
+  --color-surface: var(--card);
+  --color-surface-muted: var(--muted);
+  --color-text-primary: var(--foreground);
+  --color-text-secondary: var(--muted-foreground);
+  --color-text-muted: var(--muted-foreground);
+  --color-border: var(--border);
 
-  /* Accent – teal */
-  --color-accent-400: #2dd4bf;
-  --color-accent-500: #14b8a6;
-  --color-accent-600: #0d9488;
+  /* Aliases for Shadcn System */
+  --color-sidebar-ring:  var(--sidebar-ring);
+  --color-sidebar-border:  var(--sidebar-border);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-accent:  var(--sidebar-accent);
+  --color-sidebar-primary-foreground:  var(--sidebar-primary-foreground);
+  --color-sidebar-primary:  var(--sidebar-primary);
+  --color-sidebar-foreground:  var(--sidebar-foreground);
+  --color-sidebar:  var(--sidebar);
 
-  /* Semantic surface colours (light) */
-  --color-background:    #f8faff;
-  --color-foreground:    #0f172a;
-  --color-surface:       #ffffff;
-  --color-surface-muted: #f1f5f9;
-  --color-border:        #e2e8f0;
+  --color-chart-5:  var(--chart-5);
+  --color-chart-4:  var(--chart-4);
+  --color-chart-3:  var(--chart-3);
+  --color-chart-2:  var(--chart-2);
+  --color-chart-1:  var(--chart-1);
 
-  /* Semantic text */
-  --color-text-primary:   #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted:     #94a3b8;
-}
+  --color-ring:  var(--ring);
+  --color-input:  var(--input);
+  --color-border: var(--border);
 
-/* ─── Dark Mode Tokens ──────────────────────────────────────────────────── */
+  --color-destructive:  var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
 
-@media (prefers-color-scheme: dark) {
-  @theme inline {
-    --color-background:    #060d1a;
-    --color-foreground:    #e2e8f0;
-    --color-surface:       #0f1f35;
-    --color-surface-muted: #1e2d45;
-    --color-border:        #1e3a5f;
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-accent:  var(--accent);
 
-    --color-text-primary:   #e2e8f0;
-    --color-text-secondary: #94a3b8;
-    --color-text-muted:     #64748b;
-  }
+  --color-muted-foreground:  var(--muted-foreground);
+  --color-muted:  var(--muted);
+
+  --color-secondary-foreground:  var(--secondary-foreground);
+  --color-secondary:  var(--secondary);
+
+  --color-primary-foreground:  var(--primary-foreground);
+  --color-primary:  var(--primary);
+
+  --color-popover-foreground:  var(--popover-foreground);
+  --color-popover:  var(--popover);
+
+  --color-card-foreground:  var(--card-foreground);
+  --color-card:  var(--card);
+
+  /* Status Colors */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  /* Support Accent */
+  --color-support: var(--support);
+  --color-support-foreground: var(--support-foreground);
+
+  /* Tint Colors */
+  --color-primary-tint: var(--primary-tint);
+  --color-secondary-tint: var(--secondary-tint);
+  --color-warm-tint: var(--warm-tint);
+  --color-support-tint: var(--support-tint);
+
+  /* Radii */
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
+  --radius-2xl:  calc(var(--radius) * 1.8);
 }
 
 /* ─── Base Styles ───────────────────────────────────────────────────────── */
@@ -72,8 +112,8 @@ html {
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: var(--font-sans);
   line-height: 1.6;
 }
@@ -81,9 +121,8 @@ body {
 /* ─── Focus Ring ────────────────────────────────────────────────────────── */
 
 :focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 3px;
-  border-radius: 4px;
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────────────────── */
@@ -94,14 +133,14 @@ body {
 }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
+  background-color: var(--border);
   border-radius: 999px;
 }
 
 /* ─── Utility Animations ────────────────────────────────────────────────── */
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -115,13 +154,143 @@ body {
   50%       { opacity: 1;   transform: scale(1.05); }
 }
 
-.animate-fade-up  { animation: fade-up  0.6s ease-out both; }
-.animate-fade-in  { animation: fade-in  0.4s ease-out both; }
+.animate-fade-up  { animation: fade-up  0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-in  { animation: fade-in  0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
 
 /* Staggered delay helpers */
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
+
+/* ─── Root Tokens (Soft Clinical Light) ───────────────────────────────── */
+
+:root {
+  /* HealthSetu Espresso/Peach Theme */
+  --background: #FAFAFA;
+  --foreground: #2A0C00;
+
+  --card: #FFFFFF;
+  --card-foreground: #2A0C00;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #2A0C00;
+
+  --primary: #FDBA74;
+  --primary-foreground: #2A0C00;
+
+  --secondary: #5E3400;
+  --secondary-foreground: #FFFFFF;
+
+  --muted: #FEF3E8;
+  --muted-foreground: #7A4D1E;
+
+  --accent: #5E3400;
+  --accent-foreground: #FFFFFF;
+
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+
+  /* Status Colors */
+  --success: #16A34A;
+  --success-foreground: #FFFFFF;
+  --warning: #F59E0B;
+  --warning-foreground: #2A0C00;
+  --info: #5E3400;
+  --info-foreground: #FFFFFF;
+
+  /* Support Accent */
+  --support: #7A4D1E;
+  --support-foreground: #FFFFFF;
+
+  /* Tint Colors */
+  --primary-tint: #FEF3E8;
+  --secondary-tint: #F4E8D8;
+  --warm-tint: #FFEDD5;
+  --support-tint: #F9F3ED;
+
+  /* Borders & Inputs */
+  --border: #FCC997;
+  --input: #FCC997;
+  --ring: #FDBA74;
+
+  --chart-1: #FDBA74;
+  --chart-2: #5E3400;
+  --chart-3: #DC2626;
+  --chart-4: #16A34A;
+  --chart-5: #7A4D1E;
+
+  /* Border radius */
+  --radius: 0.5rem;
+
+  /* Sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #2A0C00;
+  --sidebar-primary: #FDBA74;
+  --sidebar-primary-foreground: #2A0C00;
+  --sidebar-accent: #FEF3E8;
+  --sidebar-accent-foreground: #2A0C00;
+  --sidebar-border: #FCC997;
+  --sidebar-ring: #FDBA74;
+}
+
+.dark {
+  /* Dark mode with warm undertones */
+  --background: #0F172A;
+  --foreground: #F8FAFC;
+
+  --card: #1E293B;
+  --card-foreground: #F8FAFC;
+
+  --popover: #1E293B;
+  --popover-foreground: #F8FAFC;
+
+  --primary: #14B8A6;
+  --primary-foreground: #022C22;
+
+  --secondary: #60A5FA;
+  --secondary-foreground: #EFF6FF;
+
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+
+  --accent: #1E293B;
+  --accent-foreground: #F8FAFC;
+
+  --destructive: #FB923C;
+  --destructive-foreground: #FFF7ED;
+
+  --success: #34D399;
+  --success-foreground: #022C22;
+  --warning: #FCD34D;
+  --warning-foreground: #78350F;
+  --info: #60A5FA;
+  --info-foreground: #1E3A8A;
+
+  --support: #A78BFA;
+  --support-foreground: #FFFFFF;
+
+  --primary-tint: #134E4A;
+  --secondary-tint: #1E3A8A;
+  --warm-tint: #7C2D12;
+  --support-tint: #4C1D95;
+
+  --border: #334155;
+  --input: #334155;
+  --ring: #14B8A6;
+
+  --sidebar: #0F172A;
+  --sidebar-foreground: #E2E8F0;
+  --sidebar-primary: #14B8A6;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-border: #334155;
+  --sidebar-ring: #14B8A6;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+}

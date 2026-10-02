@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/button";
 
 const NAV_LINKS = [
   { href: "#features", label: "Features" },

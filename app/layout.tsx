@@ -6,8 +6,9 @@
  */
 
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 // ─── Font ─────────────────────────────────────────────────────────────────
 
@@ -15,6 +16,13 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 // ─── Metadata ─────────────────────────────────────────────────────────────
@@ -44,8 +52,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} scroll-smooth`}>
-      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+    <html lang="en" suppressHydrationWarning className={cn("scroll-smooth", inter.variable, jetBrainsMono.variable, "antialiased")}>
+      <body className="font-sans min-h-screen flex flex-col bg-background text-foreground">
         {children}
       </body>
     </html>
