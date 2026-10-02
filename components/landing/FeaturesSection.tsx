@@ -1,43 +1,65 @@
 /**
  * components/landing/FeaturesSection.tsx
  *
- * Feature cards grid showcasing HealthSetu's core capabilities.
+ * Feature cards grid — HealthSetu core capabilities.
+ * Uses Lucide icons in duotone-lite tint circles.
  * Server component.
  */
 
+import {
+  Activity,
+  ShieldCheck,
+  Building2,
+  Sparkles,
+  FileText,
+  Heart,
+} from "lucide-react";
+
 const FEATURES = [
   {
-    icon: "📋",
+    icon: Activity,
+    iconColor: "text-accent",
+    bgColor: "bg-primary-tint",
     title: "Unified Health Timeline",
     description:
       "All your encounters, prescriptions, lab results, and discharge summaries in a single chronological view — searchable and filterable.",
   },
   {
-    icon: "🔐",
+    icon: ShieldCheck,
+    iconColor: "text-accent",
+    bgColor: "bg-secondary-tint",
     title: "Patient-Controlled Consent",
     description:
       "You decide exactly which records to share, with which provider, and for how long. Revoke access at any time.",
   },
   {
-    icon: "🏥",
+    icon: Building2,
+    iconColor: "text-accent",
+    bgColor: "bg-warm-tint",
     title: "Multi-Hospital Continuity",
     description:
-      "When you visit Hospital B, the doctor can review your Hospital A records (with your permission) and add a new encounter to your timeline.",
+      "When you visit Hospital B, the doctor can review your Hospital A records (with your permission) and add a new encounter.",
   },
   {
-    icon: "🤖",
+    icon: Sparkles,
+    iconColor: "text-accent",
+    bgColor: "bg-primary-tint",
     title: "AI-Assisted Explanations",
     description:
-      "Plain-language summaries of your reports powered by Groq LLM — always grounded in your own records and clearly labelled as AI output.",
+      "Plain-language summaries of your reports powered by LLM — always grounded in your own records and clearly labelled as AI output.",
   },
   {
-    icon: "📄",
+    icon: FileText,
+    iconColor: "text-accent",
+    bgColor: "bg-secondary-tint",
     title: "Document Understanding",
     description:
       "Upload scanned prescriptions or PDFs. Structured data is extracted via OCR and you verify before it enters your record.",
   },
   {
-    icon: "🇮🇳",
+    icon: Heart,
+    iconColor: "text-accent",
+    bgColor: "bg-warm-tint",
     title: "ABDM-Inspired Flow",
     description:
       "Simulated ABHA-style consent and record-retrieval flow for hackathon demonstration — clearly labelled, synthetic data throughout.",
@@ -49,18 +71,23 @@ export default function FeaturesSection() {
     <section
       id="features"
       aria-labelledby="features-heading"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-[var(--color-surface-muted)]"
+      className="py-24 px-4 sm:px-6 lg:px-8 bg-muted/50"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-tint border border-border/40 text-accent text-xs font-heading font-semibold tracking-wide uppercase mb-4">
+            Core features
+          </div>
           <h2
             id="features-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-foreground mb-4"
           >
-            Everything your health journey needs
+            Everything your health
+            <br className="hidden sm:block" />
+            journey needs
           </h2>
-          <p className="text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             Built with one goal: ensuring the doctor you see today has the
             context they need from your entire health history.
           </p>
@@ -68,36 +95,26 @@ export default function FeaturesSection() {
 
         {/* Feature cards grid */}
         <ul
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
           role="list"
         >
-          {FEATURES.map(({ icon, title, description }) => (
+          {FEATURES.map(({ icon: Icon, iconColor, bgColor, title, description }) => (
             <li
               key={title}
-              className="group relative flex flex-col gap-4 p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] transition-all duration-300 hover:border-[var(--color-brand-300)] hover:shadow-xl hover:-translate-y-1"
+              className="group relative flex flex-col gap-4 p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-border/40 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:-translate-y-0.5"
             >
-              {/* Hover glow */}
+              {/* Icon */}
               <div
-                aria-hidden="true"
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(circle at top left, var(--color-brand-500)08, transparent 60%)",
-                }}
-              />
-
-              <span
-                aria-hidden="true"
-                className="text-4xl leading-none"
+                className={`size-12 rounded-xl ${bgColor} flex items-center justify-center transition-transform duration-200 group-hover:scale-105`}
               >
-                {icon}
-              </span>
+                <Icon className={`size-5 ${iconColor} stroke-[1.5]`} />
+              </div>
 
               <div>
-                <h3 className="font-semibold text-lg text-[var(--color-text-primary)] mb-2">
+                <h3 className="font-semibold font-heading text-lg text-foreground mb-2">
                   {title}
                 </h3>
-                <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                <p className="text-sm leading-relaxed text-muted-foreground">
                   {description}
                 </p>
               </div>

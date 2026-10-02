@@ -1,42 +1,51 @@
 /**
  * components/landing/HowItWorksSection.tsx
  *
- * Step-by-step visual flow: Hospital A → consent → Hospital B.
+ * Step-by-step visual flow with Lucide icons and
+ * gradient connector line.
  * Server component.
  */
+
+import {
+  Hospital,
+  User,
+  ShieldCheck,
+  Stethoscope,
+  FileCheck,
+} from "lucide-react";
 
 const STEPS = [
   {
     step: "01",
-    icon: "🏥",
+    icon: Hospital,
     title: "Visit Hospital A",
     description:
       "Your doctor creates an encounter, prescribes medication, and requests diagnostic tests. All records are added to your HealthSetu timeline.",
   },
   {
     step: "02",
-    icon: "🔒",
+    icon: User,
     title: "You Control Your Records",
     description:
       "Every record belongs to you. You can view your full timeline, review what's stored, and decide exactly what to share.",
   },
   {
     step: "03",
-    icon: "✅",
+    icon: ShieldCheck,
     title: "Grant Consent to Hospital B",
     description:
       "When you visit Hospital B, you receive a consent request. You approve the specific records, scope, and duration of access.",
   },
   {
     step: "04",
-    icon: "📖",
+    icon: Stethoscope,
     title: "Doctor Reviews Prior Records",
     description:
       "The Hospital B clinician reads your authorized records — prescription, scan, notes — and makes an informed clinical decision.",
   },
   {
     step: "05",
-    icon: "📝",
+    icon: FileCheck,
     title: "New Encounter Is Recorded",
     description:
       "Hospital B adds a new, attributable encounter to your timeline. The history grows — nothing is overwritten or lost.",
@@ -53,46 +62,52 @@ export default function HowItWorksSection() {
       <div className="max-w-4xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warm-tint border border-border/40 text-accent text-xs font-heading font-semibold tracking-wide uppercase mb-4">
+            How it works
+          </div>
           <h2
             id="how-it-works-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--color-text-primary)] mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-foreground mb-4"
           >
-            How HealthSetu works
+            Your health, connected
+            <br className="hidden sm:block" />
+            in 5 simple steps
           </h2>
-          <p className="text-lg text-[var(--color-text-secondary)] max-w-xl mx-auto">
-            A simple, consent-driven flow that keeps you in control at every step.
+          <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
+            A simple, consent-driven flow that keeps you in control at every
+            step.
           </p>
         </div>
 
         {/* Steps */}
         <ol className="relative flex flex-col gap-0" aria-label="HealthSetu steps">
-          {STEPS.map(({ step, icon, title, description }, idx) => (
+          {STEPS.map(({ step, icon: Icon, title, description }, idx) => (
             <li key={step} className="relative flex gap-6 pb-12 last:pb-0">
               {/* Vertical connector line */}
               {idx < STEPS.length - 1 && (
                 <div
                   aria-hidden="true"
-                  className="absolute left-6 top-12 bottom-0 w-px bg-gradient-to-b from-[var(--color-brand-300)] to-[var(--color-border)]"
+                  className="absolute left-6 top-14 bottom-0 w-px bg-gradient-to-b from-primary/60 to-border/40"
                 />
               )}
 
               {/* Step circle */}
               <div
                 aria-hidden="true"
-                className="relative z-10 flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold bg-[var(--color-brand-600)] text-white shadow-lg shadow-[var(--color-brand-500)]/30"
+                className="relative z-10 flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center bg-accent text-white shadow-md shadow-accent/20"
               >
-                {icon}
+                <Icon className="size-5 stroke-[1.5]" />
               </div>
 
               {/* Content */}
-              <div className="pt-2">
-                <span className="text-xs font-bold tracking-widest uppercase text-[var(--color-brand-500)] mb-1 block">
+              <div className="pt-1">
+                <span className="text-xs font-heading font-bold tracking-widest uppercase text-primary mb-1 block">
                   Step {step}
                 </span>
-                <h3 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">
+                <h3 className="text-xl font-semibold font-heading text-foreground mb-2">
                   {title}
                 </h3>
-                <p className="text-[var(--color-text-secondary)] leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
                   {description}
                 </p>
               </div>
