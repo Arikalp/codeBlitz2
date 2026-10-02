@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="420" viewBox="0 0 1400 420" role="img" aria-labelledby="title desc">
+<title id="title">HealthSetu — Connected care</title><desc id="desc">Illustration of a patient health timeline connecting two healthcare facilities.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9f6ff"/><stop offset="1" stop-color="#e9fbf2"/></linearGradient></defs>
+<rect width="1400" height="420" rx="28" fill="url(#bg)"/>
+<g fill="none" stroke="#257b87" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M310 212 H510 M890 212 H1090" stroke-dasharray="15 18"/>
+<path d="M685 165 v94 M638 212 h94" stroke="#1d8b70" stroke-width="15"/>
+<rect x="112" y="104" width="198" height="216" rx="24" fill="#fff" stroke="#257b87"/>
+<path d="M172 160 h78 M172 194 h78 M172 228 h52" stroke-width="10"/>
+<rect x="1090" y="104" width="198" height="216" rx="24" fill="#fff" stroke="#257b87"/>
+<path d="M1150 160 h78 M1150 194 h78 M1150 228 h52" stroke-width="10"/>
+<circle cx="700" cy="212" r="100" fill="#fff" stroke="#1d8b70" stroke-width="8"/>
+<circle cx="210" cy="70" r="22" fill="#a8dce5" stroke="none"/><circle cx="1190" cy="70" r="22" fill="#a8dce5" stroke="none"/>
+</g>
+<g font-family="Arial, sans-serif" text-anchor="middle" fill="#174b5b"><text x="211" y="355" font-size="27" font-weight="700">Hospital A</text><text x="700" y="355" font-size="27" font-weight="700">Patient timeline</text><text x="1189" y="355" font-size="27" font-weight="700">Hospital B</text></g>
+<text x="700" y="70" font-family="Arial, sans-serif" font-size="38" font-weight="700" text-anchor="middle" fill="#123e4d">HealthSetu</text>
+<text x="700" y="111" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="#356878">One patient · Connected records · Consent-driven care</text>
+</svg>
