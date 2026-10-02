@@ -1,26 +1,127 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   app/globals.css
+   Global stylesheet for HealthSetu.
+   Uses Tailwind CSS v4 @import convention plus custom design tokens.
+────────────────────────────────────────────────────────────────────────── */
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ─── Design Tokens ─────────────────────────────────────────────────────── */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Typography */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  /* Brand colours */
+  --color-brand-50:  #eef7ff;
+  --color-brand-100: #d8edff;
+  --color-brand-200: #b9ddff;
+  --color-brand-300: #88c6ff;
+  --color-brand-400: #50a6ff;
+  --color-brand-500: #2481fb;
+  --color-brand-600: #0d61f0;
+  --color-brand-700: #0d4ad6;
+  --color-brand-800: #113cac;
+  --color-brand-900: #143888;
+
+  /* Accent – teal */
+  --color-accent-400: #2dd4bf;
+  --color-accent-500: #14b8a6;
+  --color-accent-600: #0d9488;
+
+  /* Semantic surface colours (light) */
+  --color-background:    #f8faff;
+  --color-foreground:    #0f172a;
+  --color-surface:       #ffffff;
+  --color-surface-muted: #f1f5f9;
+  --color-border:        #e2e8f0;
+
+  /* Semantic text */
+  --color-text-primary:   #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted:     #94a3b8;
 }
 
+/* ─── Dark Mode Tokens ──────────────────────────────────────────────────── */
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @theme inline {
+    --color-background:    #060d1a;
+    --color-foreground:    #e2e8f0;
+    --color-surface:       #0f1f35;
+    --color-surface-muted: #1e2d45;
+    --color-border:        #1e3a5f;
+
+    --color-text-primary:   #e2e8f0;
+    --color-text-secondary: #94a3b8;
+    --color-text-muted:     #64748b;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Base Styles ───────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+/* ─── Focus Ring ────────────────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 999px;
+}
+
+/* ─── Utility Animations ────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.05); }
+}
+
+.animate-fade-up  { animation: fade-up  0.6s ease-out both; }
+.animate-fade-in  { animation: fade-in  0.4s ease-out both; }
+.animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+
+/* Staggered delay helpers */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
