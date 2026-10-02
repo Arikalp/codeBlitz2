@@ -10,6 +10,7 @@ import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
+import FAQSection from "@/components/landing/FAQSection";
 import CtaBanner from "@/components/landing/CtaBanner";
 
 export default function HomePage() {
@@ -21,6 +22,7 @@ export default function HomePage() {
         <HeroSection />
         <FeaturesSection />
         <HowItWorksSection />
+        <FAQSection />
         <CtaBanner />
       </main>
 
