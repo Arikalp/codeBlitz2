@@ -7,6 +7,7 @@
 
 "use client";
 
+import Link from "next/link";
 import Button from "@/components/ui/Button";
 
 export default function HeroCtas() {
@@ -18,15 +19,17 @@ export default function HeroCtas() {
 
   return (
     <div className="animate-fade-up delay-300 flex flex-col sm:flex-row gap-4 justify-center">
-      <Button
-        id="hero-cta-primary"
-        variant="primary"
-        size="lg"
-        disabled
-        aria-label="Get started – authentication coming soon"
-      >
-        Get Started Free
-      </Button>
+      {/* Primary CTA — links to the live dashboard demo */}
+      <Link href="/dashboard">
+        <Button
+          id="hero-cta-primary"
+          variant="primary"
+          size="lg"
+          aria-label="Open demo dashboard"
+        >
+          View Demo Dashboard →
+        </Button>
+      </Link>
 
       <Button
         id="hero-cta-secondary"
@@ -34,7 +37,7 @@ export default function HeroCtas() {
         size="lg"
         onClick={scrollToHowItWorks}
       >
-        See How It Works →
+        See How It Works
       </Button>
     </div>
   );

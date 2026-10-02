@@ -69,9 +69,11 @@ export default function Navbar() {
           <Button variant="outline" size="sm" disabled aria-label="Sign in – coming soon">
             Sign In
           </Button>
-          <Button variant="primary" size="sm" disabled aria-label="Get started – coming soon">
-            Get Started
-          </Button>
+          <Link href="/dashboard">
+            <Button variant="primary" size="sm" aria-label="Open demo dashboard">
+              Demo Dashboard
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile menu button */}
@@ -110,7 +112,9 @@ export default function Navbar() {
           </ul>
           <div className="mt-3 flex flex-col gap-2">
             <Button variant="outline" size="md" disabled className="w-full">Sign In</Button>
-            <Button variant="primary" size="md" disabled className="w-full">Get Started</Button>
+            <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
+              <Button variant="primary" size="md" className="w-full">Demo Dashboard</Button>
+            </Link>
           </div>
         </div>
       )}
