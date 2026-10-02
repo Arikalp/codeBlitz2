@@ -21,6 +21,7 @@ import {
   Stethoscope,
   ShieldCheck,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import { MOCK_PATIENT } from "@/lib/mock-data";
 
 const NAV_ITEMS = [
@@ -39,6 +40,16 @@ interface AppSidebarProps {
 
 export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
   const pathname = usePathname();
+  const { user, patient, practitioner, facility, logout } = useAuth();
+
+  const name =
+    patient?.name ||
+    practitioner?.name ||
+    (user?.role === "facility_admin" ? (facility?.name || "Facility Admin") : null) ||
+    MOCK_PATIENT.name;
+
+  const email = user?.email || MOCK_PATIENT.email;
+  const initial = name.charAt(0).toUpperCase();
 
   return (
     <>
@@ -82,23 +93,24 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
           </button>
         </div>
 
-        {/* Demo badge */}
-        <div className="mx-4 mt-3 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-700 font-medium text-center">
-          ⚠️ Demo Mode — Synthetic Data
+        {/* Role badge */}
+        <div className="mx-4 mt-3 px-3 py-1.5 rounded-lg bg-[var(--color-brand-50)] border border-[var(--color-brand-200)] text-xs text-[var(--color-brand-700)] font-semibold flex items-center justify-between">
+          <span>Role: {user?.role ? user.role.toUpperCase() : "PATIENT"}</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
 
-        {/* Patient mini-card */}
+        {/* User mini-card */}
         <div className="mx-4 mt-3 p-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
           <div className="flex items-center gap-3">
             <div
               className="h-9 w-9 flex-shrink-0 rounded-full flex items-center justify-center text-white text-sm font-bold"
               style={{ background: "linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))" }}
             >
-              {MOCK_PATIENT.name.charAt(0)}
+              {initial}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{MOCK_PATIENT.name}</p>
-              <p className="text-xs text-[var(--color-text-muted)] truncate">{MOCK_PATIENT.email}</p>
+              <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{name}</p>
+              <p className="text-xs text-[var(--color-text-muted)] truncate">{email}</p>
             </div>
           </div>
         </div>
@@ -141,7 +153,12 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
             Settings
           </Link>
           <button
+            id="sidebar-signout-btn"
             type="button"
+            onClick={() => {
+              onClose();
+              logout();
+            }}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
           >
             <LogOut size={18} strokeWidth={1.8} />

@@ -2,16 +2,15 @@
  * models/index.ts
  *
  * Barrel export for all Mongoose models.
- * Individual models are defined in separate files per domain.
- *
- * Example (to be added in future phases):
- *   export * from "./Patient";
- *   export * from "./Encounter";
- *   export * from "./ConsentRequest";
- *
- * IMPORTANT: Only import models in server-side code
- * (Server Components, Route Handlers, Server Actions).
+ * Import models from here to avoid circular reference issues.
  */
 
-// placeholder — models will be added as features are built
-export {};
+export { default as User } from "./User";
+export { default as Patient } from "./Patient";
+export { default as Facility } from "./Facility";
+export { default as Practitioner } from "./Practitioner";
+
+export type { IUser, UserRole } from "./User";
+export type { IPatient } from "./Patient";
+export type { IFacility } from "./Facility";
+export type { IPractitioner } from "./Practitioner";

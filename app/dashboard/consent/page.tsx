@@ -6,7 +6,7 @@
 
 "use client";
 
-import { ShieldCheck, ShieldX, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { ShieldCheck, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
 import { consentBadge } from "@/components/ui/StatusBadge";
@@ -62,7 +62,7 @@ export default function ConsentPage() {
             <Card padding="md">
               <div className="flex items-center gap-3 text-[var(--color-text-muted)]">
                 <CheckCircle size={18} className="text-emerald-500" />
-                <span className="text-sm">No pending consent requests. You're all caught up.</span>
+                <span className="text-sm">No pending consent requests. You&apos;re all caught up.</span>
               </div>
             </Card>
           ) : (

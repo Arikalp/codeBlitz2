@@ -6,14 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:auth": "npx tsx tests/test-auth.mjs"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/uuid": "^10.0.0",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.12",
     "lucide-react": "^1.50.0",
     "mongoose": "^9.10.3",
     "next": "16.3.8",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "uuid": "^14.0.2",
     "zod": "^4.6.5"
   },
   "devDependencies": {

@@ -30,6 +30,7 @@ function requireEnv(name: string): string {
 export function getServerEnv() {
   return {
     mongodbUri: requireEnv("MONGODB_URI"),
+    sessionSecret: requireEnv("SESSION_SECRET"),
   } as const;
 }
 

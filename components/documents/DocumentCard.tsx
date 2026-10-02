@@ -4,7 +4,7 @@
  * Card representing a single uploaded document.
  */
 
-import { FileText, Image, Download, Eye } from "lucide-react";
+import { FileText, ImageIcon, Download, Eye } from "lucide-react";
 import type { UploadedDocument } from "@/lib/mock-data";
 import { documentStatusBadge, categoryBadge } from "@/components/ui/StatusBadge";
 
@@ -25,7 +25,7 @@ export default function DocumentCard({ document: doc }: DocumentCardProps) {
         ].join(" ")}
         aria-hidden="true"
       >
-        {isPdf ? <FileText size={22} strokeWidth={1.5} /> : <Image size={22} strokeWidth={1.5} />}
+        {isPdf ? <FileText size={22} strokeWidth={1.5} /> : <ImageIcon size={22} strokeWidth={1.5} />}
       </div>
 
       {/* Info */}

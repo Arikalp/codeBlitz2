@@ -36,7 +36,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// ─── Layout ───────────────────────────────────────────────────────────────
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
   children,
@@ -46,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} scroll-smooth`}>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

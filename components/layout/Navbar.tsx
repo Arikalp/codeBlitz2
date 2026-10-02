@@ -10,6 +10,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthContext";
 
 const NAV_LINKS = [
   { href: "#features", label: "Features" },
@@ -18,14 +19,17 @@ const NAV_LINKS = [
 ] as const;
 
 export default function Navbar() {
-  const [scrolled, setScrolled]     = useState(false);
-  const [menuOpen, setMenuOpen]     = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { user, patient, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const displayName = patient?.name || user?.email?.split("@")[0] || "User";
 
   return (
     <header
@@ -66,14 +70,34 @@ export default function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="outline" size="sm" disabled aria-label="Sign in – coming soon">
-            Sign In
-          </Button>
-          <Link href="/dashboard">
-            <Button variant="primary" size="sm" aria-label="Open demo dashboard">
-              Demo Dashboard
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link href="/dashboard/profile" className="flex items-center gap-2 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-brand-300)] transition-colors">
+                <span className="w-5 h-5 rounded-full bg-[var(--color-brand-500)] text-white flex items-center justify-center text-[10px] font-bold">
+                  {displayName.charAt(0).toUpperCase()}
+                </span>
+                <span className="truncate max-w-[120px]">{displayName}</span>
+              </Link>
+              <Link href="/dashboard">
+                <Button variant="primary" size="sm" aria-label="Open dashboard">
+                  Go to Dashboard →
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="outline" size="sm" aria-label="Sign in">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="primary" size="sm" aria-label="Register">
+                  Register
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -111,10 +135,20 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="mt-3 flex flex-col gap-2">
-            <Button variant="outline" size="md" disabled className="w-full">Sign In</Button>
-            <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
-              <Button variant="primary" size="md" className="w-full">Demo Dashboard</Button>
-            </Link>
+            {isAuthenticated ? (
+              <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
+                <Button variant="primary" size="md" className="w-full">Dashboard →</Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/login" onClick={() => setMenuOpen(false)}>
+                  <Button variant="outline" size="md" className="w-full">Sign In</Button>
+                </Link>
+                <Link href="/register" onClick={() => setMenuOpen(false)}>
+                  <Button variant="primary" size="md" className="w-full">Register</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

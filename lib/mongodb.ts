@@ -20,7 +20,6 @@ interface MongooseCache {
 
 // Augment the Node.js global type so TypeScript is happy.
 declare global {
-  // eslint-disable-next-line no-var
   var __mongooseCache: MongooseCache | undefined;
 }
 

@@ -9,5 +9,5 @@
  *   export * from "./useConsentRequest";
  */
 
-// placeholder — hooks will be added as features are built
-export {};
+export { useAuth } from "@/context/AuthContext";
+export type { UserSession, PatientProfile, PractitionerProfile, FacilityProfile } from "@/context/AuthContext";
