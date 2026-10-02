@@ -21,6 +21,7 @@ import AppShell from "@/components/layout/AppShell";
 import DocumentCard, { type DocumentItem } from "@/components/documents/DocumentCard";
 import UploadDocumentModal from "@/components/documents/UploadDocumentModal";
 import DocumentPreviewModal from "@/components/documents/DocumentPreviewModal";
+import DocumentReviewModal from "@/components/documents/DocumentReviewModal";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
 
@@ -45,6 +46,7 @@ export default function DocumentsPage() {
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<DocumentItem | null>(null);
+  const [reviewDocId, setReviewDocId] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
@@ -260,6 +262,7 @@ export default function DocumentsPage() {
                 document={doc}
                 onPreview={(d) => setPreviewDoc(d)}
                 onDelete={(id) => setDeleteConfirmId(id)}
+                onReviewExtraction={(id) => setReviewDocId(id)}
               />
             ))}
           </div>
@@ -322,6 +325,18 @@ export default function DocumentsPage() {
         <DocumentPreviewModal
           document={previewDoc}
           onClose={() => setPreviewDoc(null)}
+        />
+
+        {/* In-app Document Review Modal */}
+        <DocumentReviewModal
+          documentId={reviewDocId}
+          isOpen={Boolean(reviewDocId)}
+          onClose={() => setReviewDocId(null)}
+          onConfirmed={() => {
+            refreshDocuments();
+            setActionSuccess("Medical report verified and timeline updated!");
+            setTimeout(() => setActionSuccess(null), 3500);
+          }}
         />
       </div>
     </AppShell>

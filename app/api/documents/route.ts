@@ -26,7 +26,14 @@ import {
   documentUploadSchema,
   validateUploadedFile,
 } from "@/validators/documents";
-import { Document, ClinicalRecord, Encounter, Patient } from "@/models";
+import {
+  Document,
+  ClinicalRecord,
+  Encounter,
+  Patient,
+  DocumentExtraction,
+} from "@/models";
+import { processDocumentExtraction } from "@/services/document-processor";
 
 export async function GET(req: NextRequest) {
   try {
@@ -62,21 +69,37 @@ export async function GET(req: NextRequest) {
       .sort({ clinicalDate: -1, createdAt: -1 })
       .lean();
 
-    const safeDocs = docs.map((d) => ({
-      id: d._id.toString(),
-      title: d.title,
-      originalFileName: d.originalFileName,
-      mimeType: d.mimeType,
-      fileSizeBytes: d.fileSizeBytes,
-      recordCategory: d.recordCategory,
-      clinicalDate: d.clinicalDate,
-      facility: d.facility,
-      practitioner: d.practitioner || null,
-      notes: d.notes || null,
-      status: d.status,
-      encounterId: d.encounterId ? d.encounterId.toString() : null,
-      createdAt: d.createdAt,
-    }));
+    const docIds = docs.map((d) => d._id);
+    const extractions = await DocumentExtraction.find({ documentId: { $in: docIds } }).lean();
+    const extractionMap = new Map(extractions.map((e) => [e.documentId.toString(), e]));
+
+    const safeDocs = docs.map((d) => {
+      const ext = extractionMap.get(d._id.toString());
+      return {
+        id: d._id.toString(),
+        title: d.title,
+        originalFileName: d.originalFileName,
+        mimeType: d.mimeType,
+        fileSizeBytes: d.fileSizeBytes,
+        recordCategory: d.recordCategory,
+        clinicalDate: d.clinicalDate,
+        facility: d.facility,
+        practitioner: d.practitioner || null,
+        notes: d.notes || null,
+        status: d.status,
+        encounterId: d.encounterId ? d.encounterId.toString() : null,
+        extraction: ext
+          ? {
+              id: ext._id.toString(),
+              status: ext.status,
+              userReviewed: ext.userReviewed,
+              confidenceScore: ext.confidenceScore,
+              uncertainFields: ext.uncertainFields || [],
+            }
+          : null,
+        createdAt: d.createdAt,
+      };
+    });
 
     return apiSuccess({ documents: safeDocs });
   } catch (err) {
@@ -207,6 +230,15 @@ export async function POST(req: NextRequest) {
     // Link clinicalRecordId on Document
     doc.clinicalRecordId = clinicalRecord._id;
     await doc.save();
+
+    // 10. Trigger document extraction pipeline
+    try {
+      processDocumentExtraction(doc._id.toString(), session.patientUuid).catch((err) => {
+        console.warn("Background extraction processing warning:", err);
+      });
+    } catch (e) {
+      console.warn("Failed to trigger background extraction:", e);
+    }
 
     return apiSuccess(
       {

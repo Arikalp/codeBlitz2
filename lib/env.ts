@@ -38,5 +38,5 @@ export function getServerEnv() {
  * Public (browser-safe) env vars.
  */
 export const publicEnv = {
-  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:8000",
 } as const;

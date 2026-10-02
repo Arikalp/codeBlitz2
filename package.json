@@ -3,13 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 8000",
     "lint": "eslint",
-    "test:auth": "npx tsx tests/test-auth.mjs"
+    "test:auth": "node tests/test-auth.mjs",
+    "test:records": "node tests/test-records.mjs",
+    "test:extraction": "node tests/test-extraction.mjs"
   },
   "dependencies": {
+    "@langchain/core": "^1.2.14",
+    "@langchain/groq": "^1.3.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/uuid": "^10.0.0",
     "bcryptjs": "^3.0.3",
@@ -18,6 +22,7 @@
     "lucide-react": "^1.50.0",
     "mongoose": "^9.10.3",
     "next": "16.3.8",
+    "pdf-parse": "^2.4.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "uuid": "^14.0.2",
@@ -26,6 +31,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

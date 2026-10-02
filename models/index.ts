@@ -12,6 +12,7 @@ export { default as Practitioner } from "./Practitioner";
 export { default as Encounter } from "./Encounter";
 export { default as ClinicalRecord } from "./ClinicalRecord";
 export { default as Document } from "./Document";
+export { default as DocumentExtraction } from "./DocumentExtraction";
 
 export type { IUser, UserRole } from "./User";
 export type { IPatient } from "./Patient";
@@ -20,3 +21,10 @@ export type { IPractitioner } from "./Practitioner";
 export type { IEncounter, EncounterType, EncounterStatus } from "./Encounter";
 export type { IClinicalRecord, MedicalRecordCategory, RecordSource } from "./ClinicalRecord";
 export type { IDocument, DocumentStatus, StorageProviderType } from "./Document";
+export type {
+  IDocumentExtraction,
+  ExtractionStatus,
+  ExtractedFormat,
+  IMeasurement,
+  IStructuredExtraction,
+} from "./DocumentExtraction";
