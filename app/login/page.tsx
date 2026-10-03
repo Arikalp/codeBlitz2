@@ -278,7 +278,7 @@ function LoginForm() {
           </form>
 
           {/* Quick-Fill Demo Logins */}
-          <div className="mt-6 pt-5 border-t border-[var(--color-border)]">
+          {/* <div className="mt-6 pt-5 border-t border-[var(--color-border)]">
             <p className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-2.5">
               1-Click Demo Accounts (Pre-loaded):
             </p>
@@ -306,7 +306,7 @@ function LoginForm() {
                 );
               })}
             </div>
-          </div>
+          </div> */}
 
           {/* Register Link */}
           <div className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">

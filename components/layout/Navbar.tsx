@@ -22,6 +22,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("#features");
   const { user, patient, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -30,47 +31,73 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const sections = NAV_LINKS.map(({ href }) => document.querySelector(href)).filter(
+      (section): section is Element => Boolean(section)
+    );
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target.id) setActiveSection(`#${visible.target.id}`);
+      },
+      { rootMargin: "-20% 0px -60%", threshold: [0.1, 0.35, 0.7] }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
   const displayName = patient?.name || user?.email?.split("@")[0] || "User";
 
   return (
-    <header
-      className={[
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-[#FAF6F0]/95 backdrop-blur-md border-b border-[var(--color-border-subtle)] shadow-sm"
-          : "bg-[#FAF6F0]/70 backdrop-blur-sm border-b border-[var(--color-border-subtle)]/50",
-      ].join(" ")}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 px-3 sm:px-6 pointer-events-none">
       <nav
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20"
+        className={[
+          "pointer-events-auto max-w-7xl mx-auto mt-3 px-3 sm:px-5 lg:px-6 flex items-center justify-between h-[4.5rem] rounded-2xl border transition-all duration-300",
+          scrolled
+            ? "bg-[var(--color-surface-card)]/95 border-[var(--color-border-subtle)] shadow-card backdrop-blur-xl"
+            : "bg-[var(--color-surface-card)]/80 border-[var(--color-border-subtle)]/70 shadow-subtle backdrop-blur-md",
+        ].join(" ")}
         aria-label="Main navigation"
       >
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-2.5 group min-w-0"
           aria-label="HealthSetu home"
         >
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-container)] text-white flex items-center justify-center shadow-warm transition-transform group-hover:scale-105">
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-container)] text-white flex items-center justify-center shadow-warm transition-transform duration-300 group-hover:scale-105 group-active:scale-95">
             <HeartPulse aria-hidden="true" size={22} strokeWidth={2.2} />
           </div>
           <div className="flex flex-col">
-            <span className="font-heading font-bold text-xl text-[var(--color-text-primary)] tracking-tight leading-none">
+            <span className="font-heading font-bold text-lg sm:text-xl text-[var(--color-text-primary)] tracking-tight leading-none">
               HealthSetu
             </span>
-            <span className="text-[10px] font-semibold tracking-wider uppercase text-[var(--color-text-muted)] mt-0.5">
+            <span className="hidden sm:block text-[10px] font-semibold tracking-wider uppercase text-[var(--color-text-muted)] mt-0.5">
               Clinical Care Bridge
             </span>
           </div>
         </Link>
 
         {/* Desktop Links */}
-        <ul className="hidden md:flex items-center gap-1" role="list">
+        <ul className="hidden md:flex items-center gap-1 rounded-xl bg-[var(--color-surface-container-low)] p-1" role="list">
           {NAV_LINKS.map(({ href, label }) => (
             <li key={href}>
               <a
                 href={href}
-                className="px-3.5 py-2 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
+                aria-current={activeSection === href ? "page" : undefined}
+                className={[
+                  "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                  activeSection === href
+                    ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)] shadow-subtle"
+                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)]/70",
+                ].join(" ")}
               >
                 {label}
               </a>
@@ -79,12 +106,12 @@ export default function Navbar() {
         </ul>
 
         {/* Desktop CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
           {isAuthenticated ? (
             <>
               <Link
                 href="/dashboard/profile"
-                className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
+                className="flex items-center gap-2 text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-container-low)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
               >
                 <span className="w-6 h-6 rounded-full bg-[var(--color-timeline-node-bg)] text-[var(--color-text-primary)] flex items-center justify-center text-[10px] font-bold">
                   {displayName.charAt(0).toUpperCase()}
@@ -116,7 +143,7 @@ export default function Navbar() {
         {/* Mobile menu button */}
         <button
           id="mobile-menu-button"
-          className="md:hidden p-2 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
+          className="md:hidden p-2.5 rounded-xl text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] transition-colors active:scale-95"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
@@ -130,15 +157,21 @@ export default function Navbar() {
       {menuOpen && (
         <div
           id="mobile-menu"
-          className="md:hidden bg-[var(--color-surface-card)] border-b border-[var(--color-border-subtle)] px-4 py-4 animate-fade-in shadow-card"
+          className="pointer-events-auto md:hidden max-w-7xl mx-auto mt-2 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border-subtle)] px-3 py-3 animate-fade-in shadow-card"
         >
-          <ul className="flex flex-col gap-1" role="list">
+          <ul className="flex flex-col gap-1 rounded-xl bg-[var(--color-surface-container-low)] p-1" role="list">
             {NAV_LINKS.map(({ href, label }) => (
               <li key={href}>
                 <a
                   href={href}
                   onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-2.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
+                  aria-current={activeSection === href ? "page" : undefined}
+                  className={[
+                    "block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                    activeSection === href
+                      ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)]"
+                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)]",
+                  ].join(" ")}
                 >
                   {label}
                 </a>
