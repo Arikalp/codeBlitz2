@@ -32,8 +32,8 @@ export const MOCK_PATIENT = {
   phone: "+91 98765 43210",
   email: "arjun.sharma@example.com",
   address: "12, MG Road, Bengaluru, Karnataka 560001",
-  /** ABHA-style ID — clearly synthetic */
-  abhaId: "DEMO-1234-5678-9012",
+  /** Unique Patient Health ID */
+  patientUniqueId: "HS-PT-842910",
   emergencyContact: { name: "Priya Sharma", relation: "Spouse", phone: "+91 98765 00001" },
   conditions: ["Type 2 Diabetes (managed)", "Hypertension"],
   allergies: ["Penicillin"],

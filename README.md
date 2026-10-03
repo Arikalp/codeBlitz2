@@ -145,10 +145,8 @@ flowchart LR
 
 -   Internal patient identifier for reliable application-level
     relationships.
--   ABHA ID may be supported as a separately verified and protected
-    linkage attribute in a future/live integration.
--   Do not use ABHA ID as the database's primary key or expose it in
-    URLs, logs, or analytics.
+-   Patient Unique Health ID (`HS-PT-XXXXXX`) serves as the physician-friendly
+    access identifier for care continuity.
 -   Identity verification and record authorization are separate
     concerns.
 
@@ -205,8 +203,8 @@ flowchart LR
 -   Access should be limited to the purpose, records, recipient, and
     time period shown in the consent request.
 -   Record consent events and provider access in an audit trail.
--   Never treat possession of an ABHA ID as permission to view a
-    patient's records.
+-   Never treat possession of an identifier as automatic permission to view a
+    patient's records without active consent.
 
 ### 7. Hospital & Clinician Workspace
 
@@ -403,8 +401,8 @@ erDiagram
   -----------------------------------------------------------------------
 
 **Data modelling notes:** - Use an internal patient UUID as the primary
-application identifier; keep ABHA linkage separate, verified, protected,
-and access-controlled. - Store clinical date and upload/created date
+application identifier and `patientUniqueId` (`HS-PT-XXXXXX`) as the human-friendly
+record access identifier. - Store clinical date and upload/created date
 separately. - Keep source facility, practitioner, encounter, and
 document provenance attached to records. - Model consent as an explicit
 authorization object, not a boolean on the patient profile. - Avoid
@@ -445,7 +443,7 @@ HealthSetu's proposed direction is compatible with the broad idea of
 patient-controlled, consent-based health-information exchange, but the
 hackathon version should be honest about its integration level.
 
--   ABHA is an identity/linkage mechanism; it is **not by itself an
+-   Possession of a patient identifier is **not by itself an
     access token or blanket permission** to retrieve a patient's
     complete history.
 -   In the ABDM model, records are generally held by originating
@@ -497,7 +495,7 @@ labelled.
 ## 🖼️ Screenshots & Visual Assets
 
 Add real product screenshots here as the UI is implemented. Keep all
-screenshots synthetic---no actual patient names, ABHA identifiers, or
+screenshots synthetic---no actual patient names, personal identifiers, or
 medical documents.
 
   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -566,7 +564,7 @@ AWS_SECRET_ACCESS_KEY=
 HEALTHSETU_DEMO_MODE=true
 ```
 
-Never commit `.env.local`, secrets, private keys, real ABHA identifiers,
+Never commit `.env.local`, secrets, private keys, real patient identifiers,
 or real patient documents. Keep AI and storage credentials on the server
 only.
 

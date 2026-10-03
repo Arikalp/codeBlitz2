@@ -54,9 +54,9 @@ const FEATURES = [
   {
     icon: ShieldCheck,
     iconBg: "bg-[var(--color-badge-verified-bg)] text-[var(--color-secondary-sage)] border-[#D4EAD9]",
-    title: "ABDM-Inspired Flow (Demo)",
+    title: "Unique ID Consent Flow (Demo)",
     description:
-      "Simulated ABHA-style consent and record-retrieval flow for demonstration — clearly labeled, synthetic, and compliant with national digital health standards.",
+      "Simulated Unique Health ID-driven consent and record-retrieval flow for seamless doctor-patient care continuity — clearly labeled, synthetic, and privacy-compliant.",
   },
 ] as const;
 

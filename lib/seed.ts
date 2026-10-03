@@ -35,6 +35,7 @@ export async function seedDemoAccounts() {
 
     await Patient.create({
       internalUuid: uuidv4(),
+      patientUniqueId: "HS-PT-842910",
       userId: patientUser._id,
       name: "Ramesh Patel",
       dateOfBirth: new Date("1982-06-15"),
@@ -42,7 +43,6 @@ export async function seedDemoAccounts() {
       bloodGroup: "B+",
       phone: "+91 98765 43210",
       address: "Flat 402, Green Meadows, Bengaluru, Karnataka",
-      abhaIdDemo: "91-1234-5678-9012",
       allergies: ["Penicillin", "Sulfa drugs"],
       conditions: ["Type 2 Diabetes", "Hypertension"],
       emergencyContact: {
@@ -51,6 +51,12 @@ export async function seedDemoAccounts() {
         phone: "+91 98765 43211",
       },
     });
+  } else {
+    // If demo patient already created in DB, guarantee patientUniqueId exists
+    await Patient.updateOne(
+      { userId: patientUser._id, $or: [{ patientUniqueId: { $exists: false } }, { patientUniqueId: null }] },
+      { $set: { patientUniqueId: "HS-PT-842910" } }
+    );
   }
 
   // 2. Doctor: Dr. Priya Sharma

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none" role="img" aria-label="HealthSetu - Clinical Care Bridge">
+  <defs>
+    <linearGradient id="hsFullArchPrimary" x1="6" y1="38" x2="38" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C25E20" />
+      <stop offset="50%" stop-color="#D97736" />
+      <stop offset="100%" stop-color="#F28E4B" />
+    </linearGradient>
+    <linearGradient id="hsFullArchSecondary" x1="42" y1="38" x2="16" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1B5E20" />
+      <stop offset="60%" stop-color="#2E7D32" />
+      <stop offset="100%" stop-color="#4CAF50" />
+    </linearGradient>
+    <linearGradient id="hsFullDeckGrad" x1="6" y1="32" x2="42" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D97736" stop-opacity="0.3" />
+      <stop offset="50%" stop-color="#D97736" />
+      <stop offset="100%" stop-color="#2E7D32" stop-opacity="0.3" />
+    </linearGradient>
+    <radialGradient id="hsFullNodeGlow" cx="24" cy="22" r="7" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFDF9" />
+      <stop offset="70%" stop-color="#FDF3EB" />
+      <stop offset="100%" stop-color="#F9DECB" />
+    </radialGradient>
+  </defs>
+
+  <!-- Group: Logomark Icon (x: 0..48) -->
+  <g transform="translate(0, 0)">
+    <!-- Base Nodes -->
+    <circle cx="8" cy="36" r="3" fill="#D97736" />
+    <circle cx="8" cy="36" r="1.5" fill="#FFFDF9" />
+    <circle cx="40" cy="36" r="3" fill="#2E7D32" />
+    <circle cx="40" cy="36" r="1.5" fill="#FFFDF9" />
+
+    <!-- Deck -->
+    <path d="M 8 34 C 16 35.5, 32 35.5, 40 34" stroke="url(#hsFullDeckGrad)" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="14" y1="26" x2="14" y2="34.5" stroke="#D97736" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5" stroke-dasharray="1 2.5" />
+    <line x1="34" y1="26" x2="34" y2="34.5" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5" stroke-dasharray="1 2.5" />
+
+    <!-- Arches -->
+    <path d="M 8 36 C 8 20, 18 12, 24 12 C 26.5 12, 29 13.5, 31 16" stroke="url(#hsFullArchPrimary)" stroke-width="3.5" stroke-linecap="round" />
+    <path d="M 40 36 C 40 20, 30 12, 24 12 C 21.5 12, 19 13.5, 17 16" stroke="url(#hsFullArchSecondary)" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Keystone & Pulse -->
+    <circle cx="24" cy="22" r="5.5" fill="url(#hsFullNodeGlow)" stroke="#D97736" stroke-width="2" />
+    <path d="M 21.2 22 L 22.8 22 L 23.6 19.5 L 24.6 24.5 L 25.4 22 L 26.8 22" stroke="#D97736" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- Group: Typography Wordmark & Tagline (x: 58..240) -->
+  <g transform="translate(56, 0)">
+    <text x="0" y="27" font-family="'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.02em" fill="#2D2520">
+      Health<tspan fill="#D97736">Setu</tspan>
+    </text>
+    <text x="1" y="41" font-family="'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="600" letter-spacing="0.12em" fill="#968B81">
+      CLINICAL CARE BRIDGE
+    </text>
+  </g>
+</svg>

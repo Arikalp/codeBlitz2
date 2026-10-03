@@ -160,7 +160,7 @@ Typography delivers a dialogue between modern geometric structure and clinical d
 
 - **Headlines (Space Grotesk):** Provides structured personality and architectural rhythm. Used for page titles, record headings (e.g., "HbA1c & Lipid Profile"), and section headers.
 - **Body & Metadata (Plus Jakarta Sans):** Soft, open, and friendly humanist geometry. Carries doctor notes, patient instructions, facility descriptions, and interface navigation.
-- **Clinical Data & Metrics (JetBrains Mono):** Monospaced, tabular alignment ensures laboratory figures (e.g., `7.1 %`, `102 mg/dL`), timestamps, and ABHA IDs line up cleanly across split views and comparative encounters.
+- **Clinical Data & Metrics (JetBrains Mono):** Monospaced, tabular alignment ensures laboratory figures (e.g., `7.1 %`, `102 mg/dL`), timestamps, and Unique Health IDs line up cleanly across split views and comparative encounters.
 
 ## Layout & Spacing
 

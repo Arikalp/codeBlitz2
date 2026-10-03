@@ -6,8 +6,8 @@
  * 1. MongoDB connection & Mongoose models (User, Patient, Facility, Practitioner)
  * 2. Password hashing with bcryptjs (verify no plaintext, 12 rounds, timing-safe compare)
  * 3. JWT session tokens with jose (signing, verification, expiry, tampering resistance)
- * 4. Patient registration with profile details (phone, DOB, gender, blood group, unverified ABHA)
- * 5. Generated internal UUID v4 as primary identifier (verify ABHA is not primary key)
+ * 4. Patient registration with profile details (phone, DOB, gender, blood group)
+ * 5. Generated internal UUID v4 and Patient Unique ID as authoritative identifiers
  * 6. Secure login (valid credentials, invalid password returns generic error, non-existent user)
  * 7. Role-based access foundation:
  *    - Patient (User + Patient record)
@@ -184,7 +184,6 @@ async function runTests() {
       gender: "female",
       bloodGroup: "O+",
       address: "12 Indira Nagar, Bengaluru",
-      abhaIdDemo: "91-8888-7777-6666",
       allergies: ["Aspirin"],
       conditions: ["Mild Asthma"],
       emergencyContact: {
@@ -195,7 +194,7 @@ async function runTests() {
     });
 
     assert(testPatient.internalUuid === patientUuid, "Patient internal UUID persisted accurately");
-    assert(testPatient.abhaIdDemo === "91-8888-7777-6666", "ABHA ID stored as optional unverified demo linkage");
+    assert(testPatient.patientUniqueId && testPatient.patientUniqueId.startsWith("HS-PT-"), "Patient Unique ID generated with HS-PT- prefix");
     assert(testPatient.allergies.includes("Aspirin"), "Allergies list saved correctly");
     assert(testPatient.conditions.includes("Mild Asthma"), "Conditions list saved correctly");
 

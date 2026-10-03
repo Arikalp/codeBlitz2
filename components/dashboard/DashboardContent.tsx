@@ -32,6 +32,7 @@ import MedicalRecordCard from "@/components/dashboard/MedicalRecordCard";
 import Card from "@/components/ui/Card";
 import UploadDocumentModal from "@/components/documents/UploadDocumentModal";
 import DocumentPreviewModal from "@/components/documents/DocumentPreviewModal";
+import DoctorPortal from "@/components/doctor/DoctorPortal";
 import { useAuth } from "@/context/AuthContext";
 
 interface DashboardRecord {
@@ -60,8 +61,16 @@ interface PreviewDocData {
 
 export default function DashboardContent() {
   const { user } = useAuth();
+
+  // If authenticated user is a medical doctor or hospital administrator, render the Doctor Clinical Access Console
+  if (user?.role === "doctor" || user?.role === "facility_admin") {
+    return <DoctorPortal />;
+  }
+
   const [timelineRecords, setTimelineRecords] = useState<DashboardRecord[]>([]);
   const [docCount, setDocCount] = useState<number | null>(null);
+  const [pendingConsentCount, setPendingConsentCount] = useState<number>(1);
+  const [latestRequester, setLatestRequester] = useState<string>("Apex Multi-Specialty");
   const [apiError, setApiError] = useState<string | null>(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<PreviewDocData | null>(null);
@@ -72,9 +81,10 @@ export default function DashboardContent() {
     async function loadDashboard() {
       setApiError(null);
       try {
-        const [timelineRes, docsRes] = await Promise.allSettled([
+        const [timelineRes, docsRes, consentRes] = await Promise.allSettled([
           fetch("/api/timeline", { headers: { "Cache-Control": "no-cache" } }),
           fetch("/api/documents", { headers: { "Cache-Control": "no-cache" } }),
+          fetch("/api/consent", { headers: { "Cache-Control": "no-cache" } }),
         ]);
 
         if (ignore) return;
@@ -97,6 +107,18 @@ export default function DashboardContent() {
             docsData.data?.total ??
               (docsData.data?.documents ? docsData.data.documents.length : 0)
           );
+        }
+
+        if (consentRes.status === "fulfilled" && consentRes.value.ok) {
+          const consentData = await consentRes.value.json();
+          const list = consentData.data?.consents || [];
+          const pending = list.filter((c: any) => c.status === "pending");
+          setPendingConsentCount(pending.length);
+          if (pending.length > 0) {
+            setLatestRequester(pending[0].requestedBy || pending[0].facility || "Doctor Request");
+          } else if (list.length > 0) {
+            setLatestRequester(list[0].facility || "Verified Facility");
+          }
         }
       } catch (err) {
         console.error("Dashboard data fetch error:", err);
@@ -286,29 +308,32 @@ export default function DashboardContent() {
         </div>
 
         {/* Card 3: Consent Requests */}
-        <div className="bg-[var(--color-surface-card)] border border-[var(--color-border-subtle)] p-4 sm:p-5 rounded-2xl shadow-sm flex flex-col justify-between">
+        <Link
+          href="/dashboard/consent"
+          className="bg-[var(--color-surface-card)] border border-[var(--color-border-subtle)] hover:border-[var(--color-primary-container)]/50 p-4 sm:p-5 rounded-2xl shadow-sm flex flex-col justify-between transition-all group"
+        >
           <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-[var(--color-text-muted)]">
+            <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-[var(--color-text-muted)] group-hover:text-[var(--color-primary-container)] transition-colors">
               Consent Requests
             </span>
-            <span className="w-8 h-8 rounded-lg bg-[var(--color-badge-consult-bg)] border border-[#F9DECB] flex items-center justify-center text-[var(--color-primary-container)]">
+            <span className="w-8 h-8 rounded-lg bg-[var(--color-badge-consult-bg)] border border-[#F9DECB] flex items-center justify-center text-[var(--color-primary-container)] group-hover:scale-105 transition-transform">
               <ShieldCheck size={16} strokeWidth={2} />
             </span>
           </div>
           <div className="mt-4">
             <div className="flex items-baseline gap-2">
               <span className="font-mono text-3xl font-bold text-[var(--color-primary-container)]">
-                1
+                {pendingConsentCount}
               </span>
-              <span className="text-xs font-medium text-[var(--color-text-secondary)] bg-[var(--color-surface-container-high)] border border-[var(--color-border-subtle)] px-2 py-0.5 rounded-full">
-                Hospital B
+              <span className="text-xs font-medium text-[var(--color-text-secondary)] bg-[var(--color-surface-container-high)] border border-[var(--color-border-subtle)] px-2 py-0.5 rounded-full truncate max-w-[120px]">
+                {latestRequester}
               </span>
             </div>
             <span className="text-xs text-[var(--color-text-muted)] mt-1 block truncate">
-              Requesting prior records
+              {pendingConsentCount > 0 ? "Requires your authorization →" : "All requests resolved →"}
             </span>
           </div>
-        </div>
+        </Link>
 
         {/* Card 4: Upcoming Appointments */}
         <div className="bg-[var(--color-surface-card)] border border-[var(--color-border-subtle)] p-4 sm:p-5 rounded-2xl shadow-sm flex flex-col justify-between">

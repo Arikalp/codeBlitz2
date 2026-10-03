@@ -5,8 +5,7 @@
  * Stores hashed passwords ONLY — no plaintext ever.
  * Roles: "patient" | "doctor" | "facility_admin"
  *
- * Internal application IDs are MongoDB ObjectIds.
- * ABHA linkage is a separate, optional, unverified field.
+ * Patient Unique ID (HS-PT-XXXXXX) and internal UUIDs are the authoritative identifiers.
  */
 
 import mongoose, { Schema, Document, Model } from "mongoose";

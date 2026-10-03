@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start -p 8000",
     "lint": "eslint",
-    "test:auth": "node tests/test-auth.mjs",
+    "test:auth": "npx -y tsx tests/test-auth.mjs",
     "test:records": "node tests/test-records.mjs",
-    "test:extraction": "node tests/test-extraction.mjs"
+    "test:extraction": "node tests/test-extraction.mjs",
+    "test:doctor": "npx -y tsx tests/test-doctor-lookup.mjs"
   },
   "dependencies": {
     "@langchain/core": "^1.2.14",

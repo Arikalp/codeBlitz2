@@ -3,12 +3,13 @@
  *
  * Displays the patient's profile overview at the top of the dashboard.
  * Styled in the Warm Parchment Clinical design system:
- * terracotta avatar, verified ABHA pulse badge, and contextual clinical tags.
+ * terracotta avatar, active Patient Unique Health ID card, and contextual clinical tags.
  * Client component — connects to live authenticated patient data via useAuth().
  */
 
 "use client";
 
+import { useState } from "react";
 import {
   User,
   Phone,
@@ -16,12 +17,16 @@ import {
   Droplets,
   ShieldAlert,
   Fingerprint,
+  Copy,
+  Check,
+  Share2,
 } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
 
 export default function PatientSummaryCard() {
   const { user, patient: authPatient, isLoading } = useAuth();
+  const [copiedId, setCopiedId] = useState(false);
 
   if (isLoading) {
     return (
@@ -52,10 +57,18 @@ export default function PatientSummaryCard() {
   const phone = authPatient?.phone;
   const gender = authPatient?.gender;
   const bloodGroup = authPatient?.bloodGroup;
-  const abhaId = authPatient?.abhaIdDemo;
   const allergies = authPatient?.allergies ?? [];
   const conditions = authPatient?.conditions ?? [];
   const internalUuid = authPatient?.uuid;
+  const patientUniqueId =
+    authPatient?.patientUniqueId ||
+    (internalUuid ? `HS-PT-${internalUuid.slice(0, 6).toUpperCase()}` : "HS-PT-842910");
+
+  function handleCopyId() {
+    navigator.clipboard.writeText(patientUniqueId);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
+  }
 
   const dobStr = authPatient?.dateOfBirth
     ? formatDate(String(authPatient.dateOfBirth))
@@ -84,12 +97,6 @@ export default function PatientSummaryCard() {
               <span className="px-2.5 py-0.5 rounded-full bg-[var(--color-badge-consult-bg)] text-[var(--color-badge-consult-text)] font-mono text-[11px] font-semibold uppercase tracking-wider border border-[#F9DECB]">
                 {user.role ? user.role.toUpperCase() : "PATIENT"}
               </span>
-              {internalUuid && (
-                <span className="px-2.5 py-0.5 rounded-full bg-[var(--color-surface-container-low)] text-[var(--color-text-muted)] font-mono text-xs border border-[var(--color-border-subtle)] flex items-center gap-1">
-                  <Fingerprint size={12} />
-                  UUID: {internalUuid.slice(0, 8)}...
-                </span>
-              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--color-text-secondary)]">
@@ -113,16 +120,45 @@ export default function PatientSummaryCard() {
           </div>
         </div>
 
-        {/* ABHA Status Badge */}
-        <div className="flex items-center gap-3 bg-[var(--color-surface-container-low)] rounded-xl px-4 py-2.5 border border-[var(--color-border-subtle)] self-start lg:self-center shadow-xs">
-          <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-secondary-sage)] animate-pulse" />
-          <div className="flex flex-col">
-            <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-[var(--color-text-muted)]">
-              ABHA Linkage (Verified)
-            </span>
-            <span className="font-mono text-xs font-semibold text-[var(--color-text-primary)] tracking-tight">
-              {abhaId || "DEMO-1234-5678-9012"}
-            </span>
+        {/* Patient Unique Health ID Card (Shareable with Doctor) */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-3 bg-[var(--color-badge-consult-bg)] rounded-xl px-4 py-3 border border-[#F9DECB] shadow-xs">
+            <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-card)] border border-[#F9DECB] flex items-center justify-center text-[var(--color-primary-container)] flex-shrink-0">
+              <Fingerprint size={20} />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-[var(--color-badge-consult-text)]">
+                  Patient Unique Health ID
+                </span>
+                <span className="inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full bg-[var(--color-badge-verified-bg)] text-[var(--color-secondary-sage)] border border-[#D4EAD9]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary-sage)] animate-pulse" />
+                  Active
+                </span>
+              </div>
+              <span className="font-mono text-base font-bold text-[var(--color-primary-container)] tracking-tight">
+                {patientUniqueId}
+              </span>
+            </div>
+            <button
+              id="copy-patient-id-btn"
+              type="button"
+              onClick={handleCopyId}
+              className="ml-2 px-3 py-1.5 rounded-lg bg-[var(--color-surface-card)] hover:bg-white text-[var(--color-primary-container)] border border-[#F9DECB] transition-all flex items-center gap-1.5 text-xs font-semibold shadow-xs"
+              title="Copy Unique ID to share with your doctor"
+            >
+              {copiedId ? (
+                <>
+                  <Check size={14} className="text-[var(--color-secondary-sage)]" />
+                  <span className="text-[var(--color-secondary-sage)]">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy size={14} />
+                  <span>Copy for Doctor</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

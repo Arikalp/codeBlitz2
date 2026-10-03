@@ -38,6 +38,7 @@ export async function GET() {
 
     return apiSuccess({
       uuid: patient.internalUuid,
+      patientUniqueId: patient.patientUniqueId || `HS-PT-${patient.internalUuid.slice(0, 6).toUpperCase()}`,
       name: patient.name,
       dateOfBirth: patient.dateOfBirth,
       gender: patient.gender,
@@ -47,8 +48,6 @@ export async function GET() {
       allergies: patient.allergies,
       conditions: patient.conditions,
       emergencyContact: patient.emergencyContact,
-      // Clearly labelled as unverified demo field
-      abhaIdDemo: patient.abhaIdDemo ?? null,
     });
   } catch (err) {
     if (err instanceof Response) return err;
@@ -80,7 +79,6 @@ export async function PATCH(req: NextRequest) {
       bloodGroup: parsed.data.bloodGroup,
       phone: parsed.data.phone,
       address: parsed.data.address,
-      abhaIdDemo: parsed.data.abhaIdDemo,
       allergies: parsed.data.allergies,
       conditions: parsed.data.conditions,
       emergencyContact: parsed.data.emergencyContact,
@@ -103,6 +101,7 @@ export async function PATCH(req: NextRequest) {
 
     return apiSuccess({
       uuid: patient.internalUuid,
+      patientUniqueId: patient.patientUniqueId || `HS-PT-${patient.internalUuid.slice(0, 6).toUpperCase()}`,
       name: patient.name,
       dateOfBirth: patient.dateOfBirth,
       gender: patient.gender,
@@ -112,7 +111,6 @@ export async function PATCH(req: NextRequest) {
       allergies: patient.allergies,
       conditions: patient.conditions,
       emergencyContact: patient.emergencyContact,
-      abhaIdDemo: patient.abhaIdDemo ?? null,
     });
   } catch (err) {
     if (err instanceof Response) return err;

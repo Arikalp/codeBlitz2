@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="HealthSetu Continuum Ligature Logo">
+  <defs>
+    <linearGradient id="contFlow" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D97736" />
+      <stop offset="50%" stop-color="#E28B52" />
+      <stop offset="100%" stop-color="#2E7D32" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Pillar ('H' Left Stem - Patient Records) -->
+  <rect x="8" y="10" width="5.5" height="28" rx="2.75" fill="#D97736" />
+
+  <!-- Right Pillar ('H' Right Stem - Hospital / Clinical System) -->
+  <rect x="34.5" y="10" width="5.5" height="28" rx="2.75" fill="#2E7D32" />
+
+  <!-- The Bridge 'S' Curve Flowing Between Them -->
+  <path
+    d="M 13.5 24 C 20 24, 20 16, 24 16 C 28 16, 28 32, 32 32 C 34 32, 34.5 30, 34.5 24"
+    stroke="url(#contFlow)"
+    stroke-width="4.5"
+    stroke-linecap="round"
+  />
+
+  <!-- Active Bridge Beam Connection -->
+  <line x1="13.5" y1="24" x2="34.5" y2="24" stroke="#FFFDF9" stroke-width="2" stroke-dasharray="2 3" opacity="0.8" />
+
+  <!-- Center Biometric Node -->
+  <circle cx="24" cy="24" r="3.5" fill="#FFFDF9" stroke="#D97736" stroke-width="2" />
+</svg>

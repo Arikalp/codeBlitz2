@@ -11,7 +11,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
-import { HeartPulse, Menu, X } from "lucide-react";
+import { Menu, X, Sparkles } from "lucide-react";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 const NAV_LINKS = [
   { href: "#features", label: "Features" },
@@ -32,9 +33,10 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const sections = NAV_LINKS.map(({ href }) => document.querySelector(href)).filter(
-      (section): section is Element => Boolean(section)
-    );
+    const sections = NAV_LINKS
+      .filter(({ href }) => href.startsWith("#"))
+      .map(({ href }) => document.querySelector(href))
+      .filter((section): section is Element => Boolean(section));
 
     if (!sections.length) return;
 
@@ -66,43 +68,40 @@ export default function Navbar() {
         ].join(" ")}
         aria-label="Main navigation"
       >
-        {/* Logo */}
+        {/* Bespoke Brand Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 group min-w-0"
+          className="flex items-center group"
           aria-label="HealthSetu home"
         >
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-container)] text-white flex items-center justify-center shadow-warm transition-transform duration-300 group-hover:scale-105 group-active:scale-95">
-            <HeartPulse aria-hidden="true" size={22} strokeWidth={2.2} />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-heading font-bold text-lg sm:text-xl text-[var(--color-text-primary)] tracking-tight leading-none">
-              HealthSetu
-            </span>
-            <span className="hidden sm:block text-[10px] font-semibold tracking-wider uppercase text-[var(--color-text-muted)] mt-0.5">
-              Clinical Care Bridge
-            </span>
-          </div>
+          <BrandLogo size="md" layout="horizontal" tagline="Clinical Care Bridge" />
         </Link>
 
         {/* Desktop Links */}
         <ul className="hidden md:flex items-center gap-1 rounded-xl bg-[var(--color-surface-container-low)] p-1" role="list">
-          {NAV_LINKS.map(({ href, label }) => (
-            <li key={href}>
-              <a
-                href={href}
-                aria-current={activeSection === href ? "page" : undefined}
-                className={[
-                  "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                  activeSection === href
-                    ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)] shadow-subtle"
-                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)]/70",
-                ].join(" ")}
-              >
-                {label}
-              </a>
-            </li>
-          ))}
+          {NAV_LINKS.map(({ href, label }) => {
+            const isAnchor = href.startsWith("#");
+            const linkClass = [
+              "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+              activeSection === href
+                ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)] shadow-subtle"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)]/70",
+            ].join(" ");
+
+            return (
+              <li key={href}>
+                {isAnchor ? (
+                  <a href={href} aria-current={activeSection === href ? "page" : undefined} className={linkClass}>
+                    {label}
+                  </a>
+                ) : (
+                  <Link href={href} className={linkClass}>
+                    {label}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
 
         {/* Desktop CTA */}
@@ -160,23 +159,29 @@ export default function Navbar() {
           className="pointer-events-auto md:hidden max-w-7xl mx-auto mt-2 rounded-2xl bg-[var(--color-surface-card)] border border-[var(--color-border-subtle)] px-3 py-3 animate-fade-in shadow-card"
         >
           <ul className="flex flex-col gap-1 rounded-xl bg-[var(--color-surface-container-low)] p-1" role="list">
-            {NAV_LINKS.map(({ href, label }) => (
-              <li key={href}>
-                <a
-                  href={href}
-                  onClick={() => setMenuOpen(false)}
-                  aria-current={activeSection === href ? "page" : undefined}
-                  className={[
-                    "block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    activeSection === href
-                      ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)]"
-                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)]",
-                  ].join(" ")}
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
+            {NAV_LINKS.map(({ href, label }) => {
+              const isAnchor = href.startsWith("#");
+              const mClass = [
+                "block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                activeSection === href
+                  ? "bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)]"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)]",
+              ].join(" ");
+
+              return (
+                <li key={href}>
+                  {isAnchor ? (
+                    <a href={href} onClick={() => setMenuOpen(false)} aria-current={activeSection === href ? "page" : undefined} className={mClass}>
+                      {label}
+                    </a>
+                  ) : (
+                    <Link href={href} onClick={() => setMenuOpen(false)} className={mClass}>
+                      {label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
           <div className="mt-3 flex flex-col gap-2">
             {isAuthenticated ? (

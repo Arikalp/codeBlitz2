@@ -6,7 +6,7 @@
  */
 
 import Link from "next/link";
-import { HeartPulse } from "lucide-react";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -20,13 +20,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-[var(--color-border-subtle)]">
           {/* Brand Info */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary-container)] text-white flex items-center justify-center shadow-xs">
-                <HeartPulse size={18} strokeWidth={2.2} />
-              </div>
-              <span className="font-heading font-bold text-xl text-[var(--color-text-primary)]">
-                HealthSetu
-              </span>
+            <div className="mb-3">
+              <BrandLogo size="md" layout="horizontal" tagline="Clinical Care Bridge" />
             </div>
             <p className="text-sm text-[var(--color-text-secondary)] max-w-sm leading-relaxed mb-4">
               A longitudinal, patient-governed medical records platform unifying clinical encounters across hospital networks.

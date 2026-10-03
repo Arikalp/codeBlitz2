@@ -22,7 +22,7 @@ export default function Topbar({ title, onMenuOpen }: TopbarProps) {
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-3 px-4 sm:px-6 h-16 border-b border-[var(--color-border-subtle)] bg-[var(--color-surface-card)]/90 backdrop-blur-md">
-      {/* Left items: Mobile toggle & ABHA Verified badge */}
+      {/* Left items: Mobile toggle & HealthSetu Verified badge */}
       <div className="flex items-center gap-3 min-w-0">
         <button
           type="button"
@@ -37,7 +37,7 @@ export default function Topbar({ title, onMenuOpen }: TopbarProps) {
         <div className="flex items-center gap-2">
           <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--color-badge-verified-bg)] border border-[#D4EAD9] text-[var(--color-secondary-sage)] text-xs font-semibold uppercase tracking-wider">
             <CheckCircle size={13} />
-            <span>ABHA Verified Node</span>
+            <span>HealthSetu Verified Node</span>
           </div>
           <h1 className="text-sm sm:text-base font-heading font-semibold text-[var(--color-text-primary)] truncate">
             {title}

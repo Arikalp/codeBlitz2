@@ -6,13 +6,14 @@
  */
 
 export { default as User } from "./User";
-export { default as Patient } from "./Patient";
+export { default as Patient, generatePatientUniqueId } from "./Patient";
 export { default as Facility } from "./Facility";
 export { default as Practitioner } from "./Practitioner";
 export { default as Encounter } from "./Encounter";
 export { default as ClinicalRecord } from "./ClinicalRecord";
 export { default as Document } from "./Document";
 export { default as DocumentExtraction } from "./DocumentExtraction";
+export { default as Consent } from "./Consent";
 
 export type { IUser, UserRole } from "./User";
 export type { IPatient } from "./Patient";
@@ -21,6 +22,7 @@ export type { IPractitioner } from "./Practitioner";
 export type { IEncounter, EncounterType, EncounterStatus } from "./Encounter";
 export type { IClinicalRecord, MedicalRecordCategory, RecordSource } from "./ClinicalRecord";
 export type { IDocument, DocumentStatus, StorageProviderType } from "./Document";
+export type { IConsent, ConsentStatus } from "./Consent";
 export type {
   IDocumentExtraction,
   ExtractionStatus,

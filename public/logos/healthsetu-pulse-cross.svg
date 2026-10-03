@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="HealthSetu Pulse Cross Logo">
+  <defs>
+    <linearGradient id="crossHoriz" x1="4" y1="24" x2="44" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D97736" />
+      <stop offset="50%" stop-color="#E28B52" />
+      <stop offset="100%" stop-color="#D97736" />
+    </linearGradient>
+    <linearGradient id="crossVert" x1="24" y1="4" x2="24" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2E7D32" />
+      <stop offset="50%" stop-color="#3B9E40" />
+      <stop offset="100%" stop-color="#1B5E20" />
+    </linearGradient>
+  </defs>
+
+  <!-- Horizontal Bridge Span of the Cross (Sweeping Parabolic Deck) -->
+  <path
+    d="M 6 24 C 14 21, 20 20, 24 20 C 28 20, 34 21, 42 24 C 34 27, 28 28, 24 28 C 20 28, 14 27, 6 24 Z"
+    fill="url(#crossHoriz)"
+  />
+
+  <!-- Vertical Care Continuum Column (Pillars of Care) -->
+  <path
+    d="M 24 6 C 21 14, 20 20, 20 24 C 20 28, 21 34, 24 42 C 27 34, 28 28, 28 24 C 28 20, 27 14, 24 6 Z"
+    fill="url(#crossVert)"
+    opacity="0.92"
+  />
+
+  <!-- Negative Space Breathing Ring around Junction -->
+  <circle cx="24" cy="24" r="5" fill="#FFFDF9" />
+
+  <!-- Core Patient Nexus Point -->
+  <circle cx="24" cy="24" r="3" fill="#D97736" />
+
+  <!-- Micro ECG accent connecting the crossbeams -->
+  <path
+    d="M 12 24 L 18 24 L 21 21 L 24 27 L 27 24 L 36 24"
+    stroke="#FFFDF9"
+    stroke-width="1.4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

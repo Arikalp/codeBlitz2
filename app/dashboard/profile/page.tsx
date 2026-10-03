@@ -5,7 +5,7 @@
  * Connects to live authenticated session and patient profile.
  * Supports viewing and editing profile with Zod validation,
  * dynamic allergy/condition tag management, emergency contact,
- * and clear UUID vs ABHA separation.
+ * and clear UUID vs Unique Health ID architecture.
  */
 
 "use client";
@@ -41,6 +41,7 @@ export default function ProfilePage() {
   const { user, patient, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [copiedUuid, setCopiedUuid] = useState(false);
+  const [copiedHealthId, setCopiedHealthId] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   function handleCopyUuid(uuid: string) {
@@ -49,7 +50,16 @@ export default function ProfilePage() {
     setTimeout(() => setCopiedUuid(false), 2000);
   }
 
+  function handleCopyHealthId(id: string) {
+    navigator.clipboard.writeText(id);
+    setCopiedHealthId(true);
+    setTimeout(() => setCopiedHealthId(false), 2000);
+  }
+
   const currentUuid = patient?.uuid || "550e8400-e29b-41d4-a716-446655440000";
+  const currentHealthId =
+    patient?.patientUniqueId ||
+    (patient?.uuid ? `HS-PT-${patient.uuid.slice(0, 6).toUpperCase()}` : "HS-PT-842910");
   const currentName = patient?.name || MOCK_PATIENT.name;
   const currentEmail = user?.email || MOCK_PATIENT.email;
 
@@ -130,34 +140,34 @@ export default function ProfilePage() {
         </Card>
 
         {/* Identity & Identifiers Panel */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Internal Primary UUID Card */}
-          <Card className="border-[var(--color-brand-200)] bg-[var(--color-brand-50)]/30">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Card 1: Unique Patient Health ID (Doctor Access Key) */}
+          <Card className="border-[#F9DECB] bg-[var(--color-badge-consult-bg)]/50">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <Fingerprint size={18} className="text-[var(--color-brand-600)]" />
-                <h2 className="text-xs font-bold text-[var(--color-brand-800)] uppercase tracking-wider">
-                  Internal Patient Identifier
+                <Fingerprint size={18} className="text-[var(--color-primary-container)]" />
+                <h2 className="text-xs font-bold text-[var(--color-primary)] uppercase tracking-wider">
+                  Unique Health ID
                 </h2>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-brand-100)] text-[var(--color-brand-800)] font-semibold">
-                Primary Database Key
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] border border-[#F9DECB] font-semibold">
+                Doctor Access Key
               </span>
             </div>
-            <p className="text-xs text-[var(--color-text-muted)] mt-1.5 mb-2">
-              Generated UUID v4. Never exposed in insecure contexts.
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1.5 mb-2">
+              Share with your doctor to grant record access.
             </p>
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[var(--color-brand-200)]">
-              <code className="text-xs font-mono font-bold text-[var(--color-brand-900)] truncate">
-                {currentUuid}
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#F9DECB]">
+              <code className="text-xs font-mono font-bold text-[var(--color-primary-container)] truncate">
+                {currentHealthId}
               </code>
               <button
                 type="button"
-                onClick={() => handleCopyUuid(currentUuid)}
-                className="ml-2 p-1.5 rounded-lg text-[var(--color-brand-600)] hover:bg-[var(--color-brand-50)] transition-colors flex items-center gap-1 text-xs"
-                title="Copy internal UUID"
+                onClick={() => handleCopyHealthId(currentHealthId)}
+                className="ml-2 p-1.5 rounded-lg text-[var(--color-primary-container)] hover:bg-[var(--color-badge-consult-bg)] transition-colors flex items-center gap-1 text-xs"
+                title="Copy Unique Health ID"
               >
-                {copiedUuid ? (
+                {copiedHealthId ? (
                   <>
                     <Check size={14} className="text-emerald-600" />
                     <span className="text-[11px] text-emerald-600 font-medium">Copied</span>
@@ -172,29 +182,44 @@ export default function ProfilePage() {
             </div>
           </Card>
 
-          {/* Optional Unverified ABHA Linkage */}
-          <Card className="border-amber-200 bg-amber-50/30">
+          {/* Card 2: Internal Primary UUID Card */}
+          <Card className="border-[var(--color-border-subtle)] bg-[var(--color-surface-container-low)]">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <ShieldAlert size={18} className="text-amber-600" />
-                <h2 className="text-xs font-bold text-amber-900 uppercase tracking-wider">
-                  ABHA Linkage (Demo)
+                <Fingerprint size={18} className="text-[var(--color-text-secondary)]" />
+                <h2 className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">
+                  Internal UUID
                 </h2>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold">
-                Optional & Unverified
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-surface-container-high)] text-[var(--color-text-muted)] font-semibold">
+                System Key
               </span>
             </div>
-            <p className="text-xs text-amber-700 mt-1.5 mb-2">
-              Demonstration linkage only. Not connected to live ABDM gateway.
+            <p className="text-xs text-[var(--color-text-muted)] mt-1.5 mb-2">
+              Cryptographic UUID v4 identifier.
             </p>
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-amber-200">
-              <code className="text-xs font-mono text-amber-900">
-                {patient?.abhaIdDemo || MOCK_PATIENT.abhaId || "Not linked in demo"}
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[var(--color-border-subtle)]">
+              <code className="text-xs font-mono font-bold text-[var(--color-text-primary)] truncate">
+                {currentUuid.slice(0, 14)}...
               </code>
-              <span className="text-[11px] text-amber-600 font-medium px-2 py-0.5 bg-amber-50 rounded-md">
-                Demo
-              </span>
+              <button
+                type="button"
+                onClick={() => handleCopyUuid(currentUuid)}
+                className="ml-2 p-1.5 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] transition-colors flex items-center gap-1 text-xs"
+                title="Copy internal UUID"
+              >
+                {copiedUuid ? (
+                  <>
+                    <Check size={14} className="text-emerald-600" />
+                    <span className="text-[11px] text-emerald-600 font-medium">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} />
+                    <span className="text-[11px] font-medium">Copy</span>
+                  </>
+                )}
+              </button>
             </div>
           </Card>
         </div>
@@ -240,7 +265,6 @@ function ProfileEditForm({ patient, onCancel, onSaved, updateProfile }: ProfileE
   );
   const [bloodGroup, setBloodGroup] = useState(patient?.bloodGroup || MOCK_PATIENT.bloodGroup);
   const [address, setAddress] = useState(patient?.address || MOCK_PATIENT.address);
-  const [abhaIdDemo, setAbhaIdDemo] = useState(patient?.abhaIdDemo || MOCK_PATIENT.abhaId);
   const [allergies, setAllergies] = useState<string[]>(patient?.allergies || [...MOCK_PATIENT.allergies]);
   const [conditions, setConditions] = useState<string[]>(patient?.conditions || [...MOCK_PATIENT.conditions]);
   const [newAllergy, setNewAllergy] = useState("");
@@ -288,7 +312,6 @@ function ProfileEditForm({ patient, onCancel, onSaved, updateProfile }: ProfileE
       dateOfBirth: dateOfBirth || undefined,
       bloodGroup: bloodGroup || undefined,
       address: address.trim() || undefined,
-      abhaIdDemo: abhaIdDemo.trim() || undefined,
       allergies,
       conditions,
       emergencyContact: {
@@ -407,19 +430,6 @@ function ProfileEditForm({ patient, onCancel, onSaved, updateProfile }: ProfileE
                     <option key={bg} value={bg}>{bg}</option>
                   ))}
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-[var(--color-text-primary)] mb-1">
-                  ABHA ID (Demo Linkage)
-                </label>
-                <input
-                  type="text"
-                  value={abhaIdDemo}
-                  onChange={(e) => setAbhaIdDemo(e.target.value)}
-                  placeholder="e.g. 91-1234-5678-9012"
-                  className="block w-full rounded-xl border border-amber-300 py-2 px-3 text-sm bg-amber-50/20 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                />
               </div>
             </div>
 

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="HealthSetu Guardian Shield Logo">
+  <defs>
+    <linearGradient id="shieldGrad" x1="24" y1="6" x2="24" y2="42" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D97736" />
+      <stop offset="60%" stop-color="#C25E20" />
+      <stop offset="100%" stop-color="#2E7D32" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Protective Shield Perimeter with Arch Geometry -->
+  <path
+    d="M 24 6 C 33 6, 40 10, 40 19 C 40 31, 30 38.5, 24 42 C 18 38.5, 8 31, 8 19 C 8 10, 15 6, 24 6 Z"
+    stroke="url(#shieldGrad)"
+    stroke-width="3"
+    stroke-linejoin="round"
+  />
+
+  <!-- Bridge Suspension Arc across Shield Cavity -->
+  <path
+    d="M 12 28 C 18 20, 30 20, 36 28"
+    stroke="#D97736"
+    stroke-width="2.5"
+    stroke-linecap="round"
+  />
+
+  <!-- Medical Cross Keystone within Bridge Arch -->
+  <rect x="22" y="14" width="4" height="13" rx="2" fill="#2E7D32" />
+  <rect x="17.5" y="18.5" width="13" height="4" rx="2" fill="#2E7D32" />
+
+  <!-- Center illuminated security node -->
+  <circle cx="24" cy="20.5" r="2.2" fill="#FFFDF9" />
+</svg>

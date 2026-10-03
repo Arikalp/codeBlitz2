@@ -9,7 +9,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ShieldCheck,
   Clock,
@@ -21,16 +21,64 @@ import {
   Lock,
   FileText,
   KeyRound,
+  RefreshCw,
+  User,
 } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
+import { useAuth } from "@/context/AuthContext";
 import { MOCK_CONSENTS, type ConsentRequest } from "@/lib/mock-data";
 
 export default function ConsentPage() {
-  const [consents, setConsents] = useState<ConsentRequest[]>(MOCK_CONSENTS as ConsentRequest[]);
+  const { user } = useAuth();
+  const [consents, setConsents] = useState<ConsentRequest[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  function handleAction(id: string, action: "approved" | "denied") {
-    setConsents((prev) => prev.map((c) => (c.id === id ? { ...c, status: action } : c)));
+  const isDoctor = user?.role === "doctor" || user?.role === "facility_admin";
+
+  useEffect(() => {
+    let active = true;
+    async function fetchConsents() {
+      try {
+        const res = await fetch("/api/consent", {
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (!active) return;
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data?.consents) {
+            setConsents(json.data.consents);
+            return;
+          }
+        }
+        setConsents(MOCK_CONSENTS as ConsentRequest[]);
+      } catch (err) {
+        if (active) setConsents(MOCK_CONSENTS as ConsentRequest[]);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    fetchConsents();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function handleAction(id: string, action: "approved" | "denied") {
+    // Optimistic UI update
+    setConsents((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, status: action } : c))
+    );
+
+    try {
+      await fetch(`/api/consent/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+    } catch (e) {
+      console.error("Failed to update consent status:", e);
+    }
   }
 
   const pending  = consents.filter((c) => c.status === "pending");
@@ -60,10 +108,12 @@ export default function ConsentPage() {
             </div>
             <div>
               <h1 className="font-heading text-2xl font-bold text-[var(--color-text-primary)] tracking-tight">
-                Consent &amp; Access Governance
+                {isDoctor ? "Report Requests & Consent Governance" : "Consent & Access Governance"}
               </h1>
               <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mt-0.5">
-                Review and govern requests to access your medical records across hospitals.
+                {isDoctor
+                  ? "Track report access requests and patient authorizations under ABDM."
+                  : "Review and govern requests from doctors and hospitals to access your medical records."}
               </p>
             </div>
           </div>
@@ -79,7 +129,7 @@ export default function ConsentPage() {
           <div className="flex items-center gap-2">
             <Clock size={16} className="text-[var(--color-primary-container)]" />
             <h2 className="font-heading font-bold text-base text-[var(--color-text-primary)]">
-              Pending Authorization Requests
+              {isDoctor ? "Awaiting Patient Authorization" : "Pending Authorization Requests"}
             </h2>
             <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-full bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] border border-[#F9DECB]">
               {pending.length}
@@ -90,14 +140,20 @@ export default function ConsentPage() {
             <Card padding="md" className="border border-[var(--color-border-subtle)] bg-[var(--color-surface-card)] rounded-2xl p-6 text-center">
               <div className="flex flex-col items-center gap-2 text-[var(--color-text-muted)]">
                 <CheckCircle size={24} className="text-[var(--color-secondary-sage)]" />
-                <span className="text-sm font-medium text-[var(--color-text-primary)]">No pending requests</span>
-                <span className="text-xs">Your records are completely private. Providers must request access before viewing.</span>
+                <span className="text-sm font-medium text-[var(--color-text-primary)]">
+                  {isDoctor ? "No pending patient requests" : "No pending requests"}
+                </span>
+                <span className="text-xs">
+                  {isDoctor
+                    ? "Look up a patient by their Unique Health ID to request access to their clinical reports."
+                    : "Your records are completely private. Providers must request access before viewing."}
+                </span>
               </div>
             </Card>
           ) : (
             <div className="space-y-4">
               {pending.map((c) => (
-                <ConsentCard key={c.id} consent={c} onAction={handleAction} />
+                <ConsentCard key={c.id} consent={c} onAction={handleAction} readOnly={isDoctor} />
               ))}
             </div>
           )}

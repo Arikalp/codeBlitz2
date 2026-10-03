@@ -37,12 +37,6 @@ export const registerSchema = z
     dateOfBirth: z.string().optional().transform((v) => (v === "" ? undefined : v)),
     bloodGroup: z.string().trim().max(10).optional().transform((v) => (v === "" ? undefined : v)),
     address: z.string().trim().max(500).optional().transform((v) => (v === "" ? undefined : v)),
-    abhaIdDemo: z
-      .string()
-      .trim()
-      .max(50)
-      .optional()
-      .transform((v) => (v === "" ? undefined : v)),
   })
   .refine((d) => d.password === d.confirmPassword, {
     message: "Passwords do not match",
@@ -69,16 +63,6 @@ export const patientProfileSchema = z.object({
   bloodGroup: z.string().trim().max(10).optional().transform((v) => (v === "" ? undefined : v)),
   phone: z.string().trim().max(20).optional().transform((v) => (v === "" ? undefined : v)),
   address: z.string().trim().max(500).optional().transform((v) => (v === "" ? undefined : v)),
-  /**
-   * ABHA ID — optional, unverified in demo.
-   * Stored separately and never used as a database key.
-   */
-  abhaIdDemo: z
-    .string()
-    .trim()
-    .max(50)
-    .optional()
-    .transform((v) => (v === "" ? undefined : v)),
   allergies: z.array(z.string().trim().max(100)).default([]),
   conditions: z.array(z.string().trim().max(200)).default([]),
   emergencyContact: z

@@ -21,6 +21,7 @@ import {
   Stethoscope,
   ShieldCheck,
 } from "lucide-react";
+import BrandLogo from "@/components/ui/BrandLogo";
 import { useAuth } from "@/context/AuthContext";
 
 
@@ -52,6 +53,26 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
   const email = user?.email || "";
   const initial = name.charAt(0).toUpperCase();
 
+  const isDoctor = user?.role === "doctor" || user?.role === "facility_admin";
+
+  const navItems = isDoctor
+    ? [
+        { href: "/dashboard", label: "Patient Lookup", icon: LayoutDashboard },
+        { href: "/dashboard/timeline", label: "Timeline Review", icon: Clock },
+        { href: "/dashboard/documents", label: "Clinical Records", icon: FolderOpen },
+        { href: "/dashboard/consent", label: "Consent Requests", icon: ShieldCheck },
+        { href: "/dashboard/ai", label: "AI Diagnostic", icon: Bot },
+        { href: "/dashboard/profile", label: "Doctor Profile", icon: User },
+      ]
+    : [
+        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/dashboard/timeline", label: "Timeline", icon: Clock },
+        { href: "/dashboard/documents", label: "Documents", icon: FolderOpen },
+        { href: "/dashboard/consent", label: "Consent", icon: ShieldCheck },
+        { href: "/dashboard/ai", label: "AI Assistant", icon: Bot },
+        { href: "/dashboard/profile", label: "Profile & Health ID", icon: User },
+      ];
+
   return (
     <>
       {/* Mobile overlay */}
@@ -78,20 +99,14 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border-subtle)]">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2.5 group"
+            className="flex items-center group"
             onClick={onClose}
           >
-            <div className="w-9 h-9 rounded-lg bg-[var(--color-badge-consult-bg)] border border-[var(--color-border-subtle)] flex items-center justify-center text-[var(--color-primary-container)] group-hover:scale-105 transition-transform">
-              <Stethoscope size={20} strokeWidth={2.2} />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-heading font-bold text-base text-[var(--color-text-primary)] tracking-tight leading-tight">
-                HealthSetu
-              </span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
-                Clinical Record
-              </span>
-            </div>
+            <BrandLogo
+              size="sm"
+              layout="horizontal"
+              tagline={isDoctor ? "Doctor Console" : "Clinical Record"}
+            />
           </Link>
           <button
             type="button"
@@ -106,10 +121,10 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
         {/* Navigation */}
         <div className="p-3">
           <span className="px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] block mb-1.5">
-            Patient Care
+            {isDoctor ? "Clinical Portal" : "Patient Care"}
           </span>
           <nav className="flex flex-col gap-1" aria-label="Primary navigation">
-            {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            {navItems.map(({ href, label, icon: Icon }) => {
               const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
               return (
                 <Link

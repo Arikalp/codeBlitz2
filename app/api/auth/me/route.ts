@@ -31,7 +31,14 @@ export async function GET() {
     let facilityProfile = null;
 
     if (session.role === "patient" && session.patientUuid) {
-      patientProfile = await Patient.findOne({ internalUuid: session.patientUuid }).lean();
+      let doc = await Patient.findOne({ internalUuid: session.patientUuid });
+      if (doc) {
+        if (!doc.patientUniqueId) {
+          doc.patientUniqueId = `HS-PT-${Math.floor(100000 + Math.random() * 900000)}`;
+          await Patient.updateOne({ _id: doc._id }, { $set: { patientUniqueId: doc.patientUniqueId } });
+        }
+        patientProfile = doc.toObject();
+      }
     } else if (session.role === "doctor") {
       practitionerProfile = await Practitioner.findOne({ userId: user._id }).lean();
     } else if (session.role === "facility_admin") {
@@ -47,6 +54,7 @@ export async function GET() {
       patient: patientProfile
         ? {
             uuid: patientProfile.internalUuid,
+            patientUniqueId: patientProfile.patientUniqueId || `HS-PT-${patientProfile.internalUuid.slice(0, 6).toUpperCase()}`,
             name: patientProfile.name,
             dateOfBirth: patientProfile.dateOfBirth,
             gender: patientProfile.gender,
@@ -56,7 +64,6 @@ export async function GET() {
             allergies: patientProfile.allergies,
             conditions: patientProfile.conditions,
             emergencyContact: patientProfile.emergencyContact,
-            abhaIdDemo: patientProfile.abhaIdDemo ?? null,
           }
         : null,
       practitioner: practitionerProfile

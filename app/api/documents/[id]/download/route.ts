@@ -26,9 +26,6 @@ interface RouteParams {
 export async function GET(_req: NextRequest, { params }: RouteParams) {
   try {
     const session = await requireSession();
-    if (!session.patientUuid) {
-      return apiError("Only authorized patients can download medical files", 403);
-    }
 
     const { id } = await params;
     await connectToDatabase();
@@ -42,9 +39,12 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
       return apiError("Document not found", 404);
     }
 
-    // Strict ownership verification
-    if (doc.patientUuid !== session.patientUuid) {
-      return apiError("Access denied: You do not own this document", 403);
+    // Access control: Patient owner or authorized medical practitioner
+    const isPatientOwner = session.patientUuid && doc.patientUuid === session.patientUuid;
+    const isAuthorizedDoctor = session.role === "doctor" || session.role === "facility_admin";
+
+    if (!isPatientOwner && !isAuthorizedDoctor) {
+      return apiError("Access denied: You do not have permission to download this document", 403);
     }
 
     const storageProvider = getStorageProvider();

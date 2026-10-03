@@ -4,7 +4,7 @@
  * /register — Patient Registration and Profile Initialisation.
  * Validates inputs client-side & server-side with Zod.
  * Password strength and match checking.
- * Allows entering essential profile information (phone, DOB, gender, blood group, address, optional unverified ABHA).
+ * Allows entering essential profile information (phone, DOB, gender, blood group, address).
  */
 
 "use client";
@@ -32,6 +32,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { registerSchema } from "@/validators/auth";
 import Button from "@/components/ui/Button";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -48,7 +49,6 @@ export default function RegisterPage() {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [address, setAddress] = useState("");
-  const [abhaIdDemo, setAbhaIdDemo] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,6 @@ export default function RegisterPage() {
       dateOfBirth: dateOfBirth || undefined,
       bloodGroup: bloodGroup || undefined,
       address: address.trim() || undefined,
-      abhaIdDemo: abhaIdDemo.trim() || undefined,
     };
 
     const parsed = registerSchema.safeParse(formData);
@@ -124,16 +123,15 @@ export default function RegisterPage() {
       <div className="max-w-2xl mx-auto">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2.5 font-bold text-2xl text-[var(--color-brand-600)]"
-            aria-label="HealthSetu Home"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-brand-600)] text-white shadow-md shadow-[var(--color-brand-600)]/20">
-              <Stethoscope size={24} strokeWidth={2.2} />
-            </span>
-            <span>HealthSetu</span>
-          </Link>
+          <div className="flex justify-center mb-4">
+            <Link
+              href="/"
+              className="inline-flex items-center group"
+              aria-label="HealthSetu Home"
+            >
+              <BrandLogo size="lg" layout="horizontal" tagline="Clinical Care Bridge" />
+            </Link>
+          </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">
             Create your account
           </h1>
@@ -465,30 +463,6 @@ export default function RegisterPage() {
                       className="block w-full rounded-xl border border-[var(--color-border)] py-2.5 pl-10 pr-3 text-sm bg-[var(--color-surface)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-500)]/20 focus:border-[var(--color-brand-600)]"
                     />
                   </div>
-                </div>
-
-                {/* Optional ABHA ID (Unverified Demo) */}
-                <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/40">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Info size={15} className="text-amber-600 flex-shrink-0" />
-                    <label
-                      htmlFor="reg-abha"
-                      className="text-xs font-semibold text-amber-900"
-                    >
-                      ABHA ID (Optional Demo Linkage)
-                    </label>
-                  </div>
-                  <input
-                    id="reg-abha"
-                    type="text"
-                    value={abhaIdDemo}
-                    onChange={(e) => setAbhaIdDemo(e.target.value)}
-                    placeholder="e.g. 91-1234-5678-9012"
-                    className="block w-full rounded-xl border border-amber-300 py-2 px-3 text-sm bg-white text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  />
-                  <p className="mt-1.5 text-[11px] text-amber-700 leading-relaxed">
-                    Note: Unverified demonstration field. Your generated internal UUID is your primary system key.
-                  </p>
                 </div>
               </div>
             )}

@@ -27,6 +27,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { loginSchema } from "@/validators/auth";
 import Button from "@/components/ui/Button";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 const DEMO_ACCOUNTS = [
   {
@@ -134,13 +135,10 @@ function LoginForm() {
         <div className="flex justify-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 font-bold text-2xl text-[var(--color-brand-600)]"
+            className="inline-flex items-center group"
             aria-label="HealthSetu Home"
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-brand-600)] text-white shadow-md shadow-[var(--color-brand-600)]/20">
-              <Stethoscope size={24} strokeWidth={2.2} />
-            </span>
-            <span>HealthSetu</span>
+            <BrandLogo size="lg" layout="horizontal" tagline="Clinical Care Bridge" />
           </Link>
         </div>
 

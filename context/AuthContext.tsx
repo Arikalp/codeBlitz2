@@ -27,6 +27,7 @@ export interface UserSession {
 
 export interface PatientProfile {
   uuid: string;
+  patientUniqueId?: string;
   name: string;
   dateOfBirth?: string | Date;
   gender?: "male" | "female" | "other" | "prefer_not_to_say";
@@ -40,7 +41,6 @@ export interface PatientProfile {
     relation?: string;
     phone?: string;
   };
-  abhaIdDemo?: string | null;
 }
 
 export interface PractitionerProfile {

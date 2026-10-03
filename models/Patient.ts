@@ -4,9 +4,8 @@
  * Mongoose model for a patient's profile.
  *
  * Security rules:
- * - `internalUuid` is the primary application identifier (generated UUID v4).
- * - ABHA ID is optional, unverified in this demo, and stored separately.
- *   It must NEVER be used as a database primary key or exposed in public URLs.
+ * - `internalUuid` is the primary internal UUID v4 identifier.
+ * - `patientUniqueId` is the unique human-friendly clinician identifier (e.g. HS-PT-842910).
  * - Each patient is linked to exactly one User document.
  */
 
@@ -16,6 +15,8 @@ export interface IPatient extends Document {
   _id: mongoose.Types.ObjectId;
   /** UUID v4 — the stable, public-safe application identifier */
   internalUuid: string;
+  /** Unique human-friendly Patient Health ID (e.g. HS-PT-842910) */
+  patientUniqueId: string;
   /** Reference to the User auth record */
   userId: mongoose.Types.ObjectId;
   name: string;
@@ -24,7 +25,7 @@ export interface IPatient extends Document {
   bloodGroup?: string;
   phone?: string;
   address?: string;
-  /** Optional, unverified ABHA linkage — never used as a key */
+  /** Optional legacy identifier field for backward compatibility */
   abhaIdDemo?: string;
   allergies: string[];
   conditions: string[];
@@ -37,12 +38,29 @@ export interface IPatient extends Document {
   updatedAt: Date;
 }
 
+/**
+ * Generates a physician-friendly unique patient identifier:
+ * e.g. HS-PT-842910
+ */
+export function generatePatientUniqueId(): string {
+  const digits = Math.floor(100000 + Math.random() * 900000);
+  return `HS-PT-${digits}`;
+}
+
 const PatientSchema = new Schema<IPatient>(
   {
     internalUuid: {
       type: String,
       required: true,
       unique: true,
+      index: true,
+    },
+    patientUniqueId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      uppercase: true,
       index: true,
     },
     userId: {
@@ -82,6 +100,12 @@ const PatientSchema = new Schema<IPatient>(
   },
   { timestamps: true }
 );
+
+PatientSchema.pre("validate", function () {
+  if (!this.patientUniqueId) {
+    this.patientUniqueId = generatePatientUniqueId();
+  }
+});
 
 const Patient: Model<IPatient> =
   mongoose.models.Patient ?? mongoose.model<IPatient>("Patient", PatientSchema);

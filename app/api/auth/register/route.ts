@@ -49,7 +49,6 @@ export async function POST(req: NextRequest) {
       dateOfBirth,
       bloodGroup,
       address,
-      abhaIdDemo,
     } = parsed.data;
     // Note: `password` is destructured but never logged or returned
     const { password } = parsed.data;
@@ -71,10 +70,11 @@ export async function POST(req: NextRequest) {
 
     // 6. Create corresponding role entity
     let patientUuid: string | undefined;
+    let patientUniqueId: string | undefined;
 
     if (role === "patient") {
       const uuid = uuidv4();
-      await Patient.create({
+      const newPatient = await Patient.create({
         internalUuid: uuid,
         userId: user._id,
         name,
@@ -83,9 +83,9 @@ export async function POST(req: NextRequest) {
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
         bloodGroup,
         address,
-        abhaIdDemo,
       });
       patientUuid = uuid;
+      patientUniqueId = newPatient.patientUniqueId;
     } else if (role === "doctor") {
       await Practitioner.create({
         userId: user._id,
@@ -121,6 +121,7 @@ export async function POST(req: NextRequest) {
           role: user.role,
           name,
           patientUuid,
+          patientUniqueId,
         },
       },
       201
