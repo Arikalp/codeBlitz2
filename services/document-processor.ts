@@ -119,7 +119,9 @@ export async function processDocumentExtraction(
   try {
     // 3. Retrieve original file buffer from private storage
     const storage = getStorageProvider();
-    const isPdf = doc.mimeType === "application/pdf";
+    const isPdf =
+      doc.mimeType === "application/pdf" ||
+      (doc.originalFileName && doc.originalFileName.toLowerCase().endsWith(".pdf"));
     const resourceType = isPdf ? "raw" : "image";
     const fileBuffer = await storage.getFileBuffer(doc.storageKey, resourceType);
 
@@ -224,25 +226,32 @@ async function runLangChainExtraction(
   mimeType: string,
   fallbackTitle: string
 ): Promise<ExtractedDataResult> {
-  // If we have extracted digital text from a PDF, use llama-3.3-70b-versatile for structuring
+  const activeModel = process.env.GROQ_MODEL || "qwen/qwen3.8-27b";
+
+  // If we have extracted digital text from a PDF, structure it with Groq LLM
   if (format === "digital_pdf" && rawText.length > 30) {
-    const llm = new ChatGroq({
-      apiKey,
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.1,
-    });
+    try {
+      const llm = new ChatGroq({
+        apiKey,
+        model: activeModel,
+        temperature: 0.1,
+      });
 
-    const structuredLlm = llm.withStructuredOutput(ExtractionStructuredSchema);
+      const structuredLlm = llm.withStructuredOutput(ExtractionStructuredSchema);
 
-    const messages = [
-      new SystemMessage(MEDICAL_SYSTEM_PROMPT),
-      new HumanMessage(
-        `Extract structured clinical information from this medical document text. Keep in mind safety rules and return null for any field that is not present.\n\nDOCUMENT TEXT:\n${rawText.slice(0, 15000)}`
-      ),
-    ];
+      const messages = [
+        new SystemMessage(MEDICAL_SYSTEM_PROMPT),
+        new HumanMessage(
+          `Extract structured clinical information from this medical document text. Keep in mind safety rules and return null for any field that is not present.\n\nDOCUMENT TEXT:\n${rawText.slice(0, 15000)}`
+        ),
+      ];
 
-    const result = await structuredLlm.invoke(messages);
-    return result as ExtractedDataResult;
+      const result = await structuredLlm.invoke(messages);
+      return result as ExtractedDataResult;
+    } catch (llmErr) {
+      console.warn("LLM structured extraction warning; falling back to heuristic extraction:", llmErr);
+      return runHeuristicFallbackExtraction(rawText, fallbackTitle, "other", new Date(), null, null);
+    }
   }
 
   // For images and scanned documents, use Groq's multimodal vision model (llama-3.2-11b-vision-preview)

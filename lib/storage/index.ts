@@ -123,6 +123,7 @@ class CloudinaryStorageProvider implements IStorageProvider {
     const url = cloudinary.url(storageKey, {
       resource_type: resourceType,
       secure: true,
+      sign_url: true,
     });
 
     const res = await fetch(url);

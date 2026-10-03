@@ -8,7 +8,8 @@
  *   - Patient profile (age, gender, blood group, allergies, conditions)
  *   - Longitudinal ClinicalRecords from MongoDB
  *   - Uploaded Documents and OCR / DocumentExtractions (findings, measurements)
- * - Builds a grounded clinical system prompt
+ *   - Automatically extracts real PDF text if extractions were pending or empty
+ * - Builds a grounded clinical system prompt with the full content of reports
  * - Streams responses back to the client using Server-Sent Events (SSE)
  *
  * Security:
@@ -19,9 +20,11 @@
 
 import { NextRequest } from "next/server";
 import Groq from "groq-sdk";
+import { PDFParse } from "pdf-parse";
 import { requireSession } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import { ClinicalRecord, Patient, Document as PatientDocument, DocumentExtraction } from "@/models";
+import { getStorageProvider } from "@/lib/storage";
 import { apiError } from "@/lib/api-response";
 
 const PRIMARY_MODEL = process.env.GROQ_MODEL || "qwen/qwen3.8-27b";
@@ -54,6 +57,7 @@ interface PatientContext {
     date: string;
     facility: string;
     notes?: string;
+    contentPreview?: string | null;
   }>;
 }
 
@@ -98,7 +102,7 @@ Summary: ${r.summary || "No summary provided"}`;
             }
 
             if (r.extractedText) {
-              item += `\nExtracted Report Content / Notes: ${r.extractedText.slice(0, 1000)}`;
+              item += `\nFULL REPORT CONTENT & LAB FINDINGS:\n"""\n${r.extractedText.slice(0, 8000)}\n"""`;
             }
 
             if (r.tags && r.tags.length > 0) {
@@ -113,11 +117,14 @@ Summary: ${r.summary || "No summary provided"}`;
   const docsText =
     ctx.documents.length > 0
       ? ctx.documents
-          .map(
-            (d, i) =>
-              `[Document ${i + 1}] ${d.title} (${d.fileName}) - ${d.category.replace(/_/g, " ")} from ${d.facility} on ${new Date(d.date).toLocaleDateString("en-IN")}${d.notes ? ` (Notes: ${d.notes})` : ""}`
-          )
-          .join("\n")
+          .map((d, i) => {
+            let dItem = `[Document ${i + 1}] ${d.title} (${d.fileName}) - ${d.category.replace(/_/g, " ")} from ${d.facility} on ${new Date(d.date).toLocaleDateString("en-IN")}${d.notes ? ` (Notes: ${d.notes})` : ""}`;
+            if (d.contentPreview) {
+              dItem += `\nContent:\n"""\n${d.contentPreview.slice(0, 4000)}\n"""`;
+            }
+            return dItem;
+          })
+          .join("\n\n")
       : "No additional standalone documents.";
 
   return `You are HealthSetu AI, an expert, compassionate clinical assistant helping ${ctx.name} understand and analyze their personal medical history and previous reports.
@@ -131,12 +138,17 @@ ${recordsText}
 ADDITIONAL UPLOADED DOCUMENTS (${ctx.documents.length} files):
 ${docsText}
 
-YOUR ROLE & CAPABILITIES:
-1. Thoroughly analyze the patient's previous medical reports, prescriptions, test results, and clinical timeline.
-2. Explain complex medical terms, lab markers, and diagnoses in clear, reassuring, and plain language.
-3. Compare findings across multiple dates or records when discussing trends (e.g. blood sugar, blood pressure, imaging changes).
-4. Always cite specific records using the [Record N] or [Document N] notation when referencing them.
-5. Offer practical preparation tips and specific questions the patient can ask their doctor during their next visit.
+CRITICAL INSTRUCTIONS FOR REPORT ANALYSIS:
+1. When asked about a report or document, DO NOT merely say that a file is uploaded or repeat file metadata.
+2. Read, analyze, and explain the ACTUAL MEDICAL CONTENT inside the report:
+   - Specific lab numbers and test results (e.g. Hemoglobin, TLC/WBC count, Platelets, Reticulocytes, differential counts).
+   - Microscopic findings, cellularity, bone marrow aspirates, biopsy observations, or pathology impressions.
+   - Doctor's remarks, clinical advice, and suggested follow-ups (e.g. PNH workup, B12 checks).
+3. If the report header lists a name different from ${ctx.name}, politely point that out as a noteworthy observation for verification.
+4. Translate complex medical jargon into clear, reassuring, and empathetic plain English.
+5. Point out trends across multiple tests or visits when relevant.
+6. Always cite specific records using the [Record N] or [Document N] notation when referencing them.
+7. Offer practical preparation tips and specific questions the patient can ask their doctor at their next visit.
 
 SAFETY AND MEDICAL GUARDRAILS:
 - You are an informational assistant, NOT a substitute for a licensed healthcare provider.
@@ -189,8 +201,7 @@ export async function POST(req: NextRequest) {
         .sort({ clinicalDate: -1 })
         .limit(MAX_RECORDS)
         .lean(),
-      DocumentExtraction.find({ patientUuid: session.patientUuid, status: "completed" })
-        .lean(),
+      DocumentExtraction.find({ patientUuid: session.patientUuid }).lean(),
     ]);
 
     // Map extractions by documentId
@@ -207,9 +218,63 @@ export async function POST(req: NextRequest) {
       docMap.set(doc._id.toString(), doc);
     }
 
+    // Ensure documents with missing or placeholder extractions get real text extracted on-the-fly
+    const storage = getStorageProvider();
+    for (const doc of dbDocs) {
+      const docIdStr = doc._id.toString();
+      const existingExt = extractionMap.get(docIdStr);
+      const isPlaceholder =
+        !existingExt?.rawText ||
+        existingExt.rawText.includes("OCR pipeline") ||
+        existingExt.rawText.includes("Visual document processed");
+
+      const isPdf =
+        doc.mimeType === "application/pdf" ||
+        (doc.originalFileName && doc.originalFileName.toLowerCase().endsWith(".pdf"));
+
+      if (isPlaceholder && isPdf && doc.storageKey) {
+        try {
+          const buf = await storage.getFileBuffer(doc.storageKey, "raw");
+          if (buf && buf.length > 0) {
+            const parser = new PDFParse({ data: buf });
+            const textResult = await parser.getText();
+            const text = (textResult.text || "").trim();
+            await parser.destroy();
+
+            if (text.length > 0) {
+              const updatedExt = await DocumentExtraction.findOneAndUpdate(
+                { documentId: doc._id },
+                {
+                  $set: {
+                    patientUuid: session.patientUuid,
+                    status: "completed",
+                    extractedFormat: "digital_pdf",
+                    rawText: text,
+                    "structuredData.findings": text.slice(0, 2000),
+                  },
+                },
+                { upsert: true, new: true }
+              ).lean();
+
+              extractionMap.set(docIdStr, updatedExt);
+            }
+          }
+        } catch (extractErr) {
+          console.warn(`[AI] On-the-fly text extraction skipped for ${doc.originalFileName}:`, extractErr);
+        }
+      }
+    }
+
     const records = dbRecords.map((r) => {
       const doc = r.documentId ? docMap.get(r.documentId.toString()) : null;
       const ext = r.documentId ? extractionMap.get(r.documentId.toString()) : null;
+
+      let extractedText =
+        ext?.rawText || ext?.structuredData?.findings || ext?.structuredData?.impression || null;
+
+      if (extractedText && extractedText.includes("Visual document processed via OCR pipeline")) {
+        extractedText = null;
+      }
 
       return {
         title: r.title,
@@ -220,7 +285,7 @@ export async function POST(req: NextRequest) {
         summary: r.summary,
         tags: r.tags || [],
         documentFileName: doc?.originalFileName ?? null,
-        extractedText: ext?.rawText || ext?.structuredData?.findings || ext?.structuredData?.impression || null,
+        extractedText,
         measurements: ext?.structuredData?.measurements?.map((m: any) => ({
           name: m.name,
           value: m.value,
@@ -230,14 +295,22 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    const documents = dbDocs.map((d) => ({
-      title: d.title,
-      fileName: d.originalFileName,
-      category: d.recordCategory,
-      date: d.clinicalDate.toISOString(),
-      facility: d.facility,
-      notes: d.notes,
-    }));
+    const documents = dbDocs.map((d) => {
+      const ext = extractionMap.get(d._id.toString());
+      let preview = ext?.rawText || ext?.structuredData?.findings || null;
+      if (preview && preview.includes("Visual document processed via OCR pipeline")) {
+        preview = null;
+      }
+      return {
+        title: d.title,
+        fileName: d.originalFileName,
+        category: d.recordCategory,
+        date: d.clinicalDate.toISOString(),
+        facility: d.facility,
+        notes: d.notes,
+        contentPreview: preview,
+      };
+    });
 
     const patientCtx: PatientContext = {
       name: patientName,
@@ -274,7 +347,7 @@ export async function POST(req: NextRequest) {
         stream = await groq.chat.completions.create({
           model,
           messages,
-          max_tokens: 1500,
+          max_tokens: 2000,
           temperature: 0.3,
           stream: true,
         });
@@ -282,7 +355,6 @@ export async function POST(req: NextRequest) {
       } catch (err: any) {
         lastError = err;
         console.warn(`[AI] Model ${model} failed:`, err?.message || err);
-        // Continue to next candidate model
       }
     }
 
