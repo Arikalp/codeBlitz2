@@ -8,6 +8,7 @@ interface CardProps {
   children: React.ReactNode;
   className?: string;
   padding?: "none" | "sm" | "md" | "lg";
+  style?: React.CSSProperties;
 }
 
 const paddingClasses = {
@@ -17,9 +18,10 @@ const paddingClasses = {
   lg:   "p-6",
 };
 
-export default function Card({ children, className = "", padding = "md" }: CardProps) {
+export default function Card({ children, className = "", padding = "md", style }: CardProps) {
   return (
     <div
+      style={style}
       className={[
         "rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_8px_24px_rgba(94,52,0,0.06)]",
         paddingClasses[padding],
