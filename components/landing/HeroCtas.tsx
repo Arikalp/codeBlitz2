@@ -51,7 +51,7 @@ export default function HeroCtas() {
               id="hero-cta-primary"
               variant="primary"
               size="lg"
-              aria-label="Create patient account"
+              aria-label="Create account"
             >
               Get Started / Register →
             </Button>

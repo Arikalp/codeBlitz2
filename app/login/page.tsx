@@ -313,7 +313,7 @@ function LoginForm() {
               href="/register"
               className="font-semibold text-[var(--color-brand-600)] hover:text-[var(--color-brand-700)] hover:underline"
             >
-              Create patient account
+              Create account
             </Link>
           </div>
         </div>
