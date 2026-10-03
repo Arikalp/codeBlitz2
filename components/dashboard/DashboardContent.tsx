@@ -3,7 +3,8 @@
  *
  * Patient Dashboard dynamic content.
  * Connects to live /api/timeline and /api/documents to display accurate counts
- * and recent clinical records, with graceful fallback to sample demonstration data.
+ * and recent clinical records. Shows empty state when the backend is unreachable
+ * rather than silently falling back to mock data.
  */
 
 "use client";
@@ -18,19 +19,14 @@ import {
   FileText,
   TrendingUp,
   Activity,
+  AlertTriangle,
 } from "lucide-react";
 import PatientSummaryCard from "@/components/dashboard/PatientSummaryCard";
 import MedicalRecordCard from "@/components/dashboard/MedicalRecordCard";
 import Card from "@/components/ui/Card";
 import UploadDocumentModal from "@/components/documents/UploadDocumentModal";
 import DocumentPreviewModal from "@/components/documents/DocumentPreviewModal";
-import {
-  MOCK_PATIENT,
-  MOCK_RECORDS,
-  MOCK_APPOINTMENTS,
-  MOCK_CONSENTS,
-  MOCK_STATS,
-} from "@/lib/mock-data";
+import { useAuth } from "@/context/AuthContext";
 
 interface DashboardRecord {
   id: string;
@@ -57,8 +53,10 @@ interface PreviewDocData {
 }
 
 export default function DashboardContent() {
+  const { user } = useAuth();
   const [timelineRecords, setTimelineRecords] = useState<DashboardRecord[]>([]);
   const [docCount, setDocCount] = useState<number | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<PreviewDocData | null>(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
@@ -66,6 +64,7 @@ export default function DashboardContent() {
   useEffect(() => {
     let ignore = false;
     async function loadDashboard() {
+      setApiError(null);
       try {
         const [timelineRes, docsRes] = await Promise.allSettled([
           fetch("/api/timeline", { headers: { "Cache-Control": "no-cache" } }),
@@ -77,6 +76,8 @@ export default function DashboardContent() {
         if (timelineRes.status === "fulfilled" && timelineRes.value.ok) {
           const data = await timelineRes.value.json();
           setTimelineRecords(data.records || []);
+        } else if (timelineRes.status === "rejected" || (timelineRes.status === "fulfilled" && !timelineRes.value.ok)) {
+          setApiError("Could not connect to the database. Please check your MongoDB Atlas IP whitelist or connection settings.");
         }
 
         if (docsRes.status === "fulfilled" && docsRes.value.ok) {
@@ -85,6 +86,7 @@ export default function DashboardContent() {
         }
       } catch (err) {
         console.error("Dashboard data fetch error:", err);
+        if (!ignore) setApiError("Network error while loading dashboard data.");
       }
     }
     loadDashboard();
@@ -97,12 +99,11 @@ export default function DashboardContent() {
     setReloadTrigger((prev) => prev + 1);
   }
 
-  // Use live records if any exist; otherwise fallback to mock records
-  const hasLiveRecords = timelineRecords.length > 0;
-  const recentRecords = hasLiveRecords ? timelineRecords.slice(0, 3) : MOCK_RECORDS.slice(0, 3);
+  // Only show live records — no silent mock fallback
+  const recentRecords = timelineRecords.slice(0, 3);
 
-  const totalRecordsCount = hasLiveRecords ? timelineRecords.length : MOCK_STATS.totalRecords;
-  const totalDocsCount = docCount !== null ? docCount : MOCK_STATS.totalDocuments;
+  const totalRecordsCount = timelineRecords.length;
+  const totalDocsCount = docCount !== null ? docCount : 0;
 
   const handleRecordClick = async (record: DashboardRecord) => {
     if (record.documentId) {
@@ -120,8 +121,19 @@ export default function DashboardContent() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Patient Summary */}
-      <PatientSummaryCard patient={MOCK_PATIENT} />
+      {/* DB / connection error banner */}
+      {apiError && (
+        <div role="alert" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          <AlertTriangle size={18} className="flex-shrink-0 mt-0.5 text-amber-500" />
+          <div>
+            <p className="font-semibold">Database connection issue</p>
+            <p className="text-xs mt-0.5 text-amber-700">{apiError}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Patient Summary — always uses live session data */}
+      <PatientSummaryCard />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -142,14 +154,14 @@ export default function DashboardContent() {
           },
           {
             label: "Pending Consents",
-            value: MOCK_STATS.pendingConsents,
+            value: 0,
             icon: ShieldCheck,
             color: "text-amber-600",
             bg: "bg-amber-50",
           },
           {
             label: "Appointments",
-            value: MOCK_STATS.upcomingAppointments,
+            value: 0,
             icon: CalendarDays,
             color: "text-emerald-600",
             bg: "bg-emerald-50",
@@ -222,84 +234,51 @@ export default function DashboardContent() {
           </div>
 
           <div className="space-y-2">
-            {recentRecords.map((r) => {
-              const rec = r as DashboardRecord;
-              return (
-                <MedicalRecordCard
-                  key={rec.id}
-                  record={{
-                    id: rec.id,
-                    category: rec.category,
-                    title: rec.title,
-                    facility: rec.facility,
-                    doctor: rec.doctor || rec.practitioner,
-                    clinicalDate: rec.clinicalDate,
-                    summary: rec.summary,
-                    tags: rec.tags,
-                    hasDocument: rec.hasDocument,
-                  }}
-                  onClick={() => handleRecordClick(rec)}
-                />
-              );
-            })}
+            {recentRecords.length > 0 ? (
+              recentRecords.map((r) => {
+                const rec = r as DashboardRecord;
+                return (
+                  <MedicalRecordCard
+                    key={rec.id}
+                    record={{
+                      id: rec.id,
+                      category: rec.category,
+                      title: rec.title,
+                      facility: rec.facility,
+                      doctor: rec.doctor || rec.practitioner,
+                      clinicalDate: rec.clinicalDate,
+                      summary: rec.summary,
+                      tags: rec.tags,
+                      hasDocument: rec.hasDocument,
+                    }}
+                    onClick={() => handleRecordClick(rec)}
+                  />
+                );
+              })
+            ) : (
+              <Card padding="md" className="text-center py-8">
+                <FileText size={32} className="mx-auto text-[var(--color-text-muted)] mb-2" />
+                <p className="text-sm font-medium text-[var(--color-text-secondary)]">No records yet</p>
+                <p className="text-xs text-[var(--color-text-muted)] mt-1">
+                  {apiError ? "Connect to the database to see your records." : "Upload your first medical document to get started."}
+                </p>
+              </Card>
+            )}
           </div>
         </div>
 
         {/* Right column */}
         <div className="space-y-5">
-          {/* Upcoming appointments */}
+          {/* Upcoming appointments — placeholder until appointments API is built */}
           <div>
             <h2 className="text-sm font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-3">
               Upcoming Appointments
             </h2>
-            <div className="space-y-2">
-              {MOCK_APPOINTMENTS.map((apt) => (
-                <Card key={apt.id} padding="sm">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                      <CalendarDays size={16} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-                        {apt.doctor}
-                      </p>
-                      <p className="text-xs text-[var(--color-text-muted)]">
-                        {apt.specialty} · {apt.type}
-                      </p>
-                      <p className="text-xs text-[var(--color-brand-600)] font-medium mt-1">
-                        {formatDate(apt.date)} at {apt.time}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <Card padding="md" className="text-center py-6">
+              <CalendarDays size={24} className="mx-auto text-[var(--color-text-muted)] mb-2" />
+              <p className="text-xs text-[var(--color-text-muted)]">No upcoming appointments</p>
+            </Card>
           </div>
-
-          {/* Pending consent */}
-          {MOCK_CONSENTS.filter((c) => c.status === "pending").length > 0 && (
-            <div>
-              <h2 className="text-sm font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-3">
-                Consent Requests
-              </h2>
-              <div className="space-y-2">
-                {MOCK_CONSENTS.filter((c) => c.status === "pending").map((c) => (
-                  <Card key={c.id} padding="sm" className="border-l-4 border-l-amber-400">
-                    <p className="text-xs font-semibold text-[var(--color-text-primary)]">
-                      {c.requestedBy}
-                    </p>
-                    <p className="text-xs text-[var(--color-text-muted)] mb-2">{c.facility}</p>
-                    <Link
-                      href="/dashboard/consent"
-                      className="text-xs font-medium text-[var(--color-brand-600)] hover:underline"
-                    >
-                      Review Request →
-                    </Link>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Health trend card */}
           <Card padding="md">

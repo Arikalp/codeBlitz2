@@ -2,8 +2,8 @@
  * components/dashboard/PatientSummaryCard.tsx
  *
  * Displays the patient's profile summary at the top of the dashboard.
- * Client component — connects to live authenticated patient data via useAuth(),
- * falling back gracefully to mock demonstration data.
+ * Client component — connects to live authenticated patient data via useAuth().
+ * Shows a clear placeholder when no live session data is available.
  */
 
 "use client";
@@ -19,30 +19,47 @@ import {
 } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { useAuth } from "@/context/AuthContext";
-import { MOCK_PATIENT } from "@/lib/mock-data";
 
-interface PatientSummaryCardProps {
-  patient?: typeof MOCK_PATIENT;
-}
+export default function PatientSummaryCard() {
+  const { user, patient: authPatient, isLoading } = useAuth();
 
-export default function PatientSummaryCard({ patient: propPatient }: PatientSummaryCardProps) {
-  const { user, patient: authPatient } = useAuth();
+  if (isLoading) {
+    return (
+      <Card className="animate-pulse">
+        <div className="flex gap-5 items-center">
+          <div className="h-16 w-16 rounded-2xl bg-[var(--color-surface-muted)]" />
+          <div className="flex-1 space-y-2">
+            <div className="h-5 w-48 rounded bg-[var(--color-surface-muted)]" />
+            <div className="h-4 w-32 rounded bg-[var(--color-surface-muted)]" />
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
-  const name = authPatient?.name || propPatient?.name || MOCK_PATIENT.name;
-  const email = user?.email || propPatient?.email || MOCK_PATIENT.email;
-  const phone = authPatient?.phone || propPatient?.phone || MOCK_PATIENT.phone;
-  const gender = authPatient?.gender || propPatient?.gender || MOCK_PATIENT.gender;
-  const bloodGroup = authPatient?.bloodGroup || propPatient?.bloodGroup || MOCK_PATIENT.bloodGroup;
-  const abhaId = authPatient?.abhaIdDemo || propPatient?.abhaId || MOCK_PATIENT.abhaId;
-  const allergies = authPatient?.allergies?.length ? authPatient.allergies : propPatient?.allergies || MOCK_PATIENT.allergies;
-  const conditions = authPatient?.conditions?.length ? authPatient.conditions : propPatient?.conditions || MOCK_PATIENT.conditions;
+  if (!user) {
+    return (
+      <Card>
+        <p className="text-sm text-[var(--color-text-muted)] text-center py-4">
+          Not authenticated — please log in.
+        </p>
+      </Card>
+    );
+  }
+
+  const name = authPatient?.name || user.email;
+  const email = user.email;
+  const phone = authPatient?.phone;
+  const gender = authPatient?.gender;
+  const bloodGroup = authPatient?.bloodGroup;
+  const abhaId = authPatient?.abhaIdDemo;
+  const allergies = authPatient?.allergies ?? [];
+  const conditions = authPatient?.conditions ?? [];
   const internalUuid = authPatient?.uuid;
 
   const dobStr = authPatient?.dateOfBirth
     ? formatDate(String(authPatient.dateOfBirth))
-    : propPatient?.dateOfBirth
-    ? formatDate(propPatient.dateOfBirth)
-    : formatDate(MOCK_PATIENT.dateOfBirth);
+    : null;
 
   return (
     <Card className="relative overflow-hidden">
@@ -73,21 +90,21 @@ export default function PatientSummaryCard({ patient: propPatient }: PatientSumm
                 UUID: {internalUuid.slice(0, 8)}...
               </span>
             ) : (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-medium">
-                ⚠️ DEMO — Synthetic Patient
+              <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">
+                Profile loading...
               </span>
             )}
           </div>
 
           <p className="text-sm text-[var(--color-text-secondary)] mb-3 capitalize">
-            {gender} {bloodGroup ? `· ${bloodGroup}` : ""} · Logged in as {user?.role || "Patient"}
+            {gender ? `${gender} ` : ""}{bloodGroup ? `· ${bloodGroup} ` : ""}· Logged in as {user.role}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-            <InfoRow icon={Phone} label={phone || "No phone provided"} />
+            {phone && <InfoRow icon={Phone} label={phone} />}
             <InfoRow icon={Mail} label={email} />
-            <InfoRow icon={Calendar} label={`DOB: ${dobStr}`} />
-            <InfoRow icon={User} label={`ABHA (Demo): ${abhaId || "Unlinked"}`} />
+            {dobStr && <InfoRow icon={Calendar} label={`DOB: ${dobStr}`} />}
+            <InfoRow icon={User} label={`ABHA: ${abhaId || "Not linked"}`} />
           </div>
         </div>
 

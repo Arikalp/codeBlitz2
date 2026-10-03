@@ -22,7 +22,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { MOCK_PATIENT } from "@/lib/mock-data";
+
 
 const NAV_ITEMS = [
   { href: "/dashboard",          label: "Dashboard",   icon: LayoutDashboard },
@@ -46,9 +46,10 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
     patient?.name ||
     practitioner?.name ||
     (user?.role === "facility_admin" ? (facility?.name || "Facility Admin") : null) ||
-    MOCK_PATIENT.name;
+    user?.email ||
+    "User";
 
-  const email = user?.email || MOCK_PATIENT.email;
+  const email = user?.email || "";
   const initial = name.charAt(0).toUpperCase();
 
   return (
