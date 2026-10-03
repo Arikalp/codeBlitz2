@@ -9,6 +9,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { AuthProvider } from "@/context/AuthContext";
 
 // ─── Font ─────────────────────────────────────────────────────────────────
 
@@ -54,7 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={cn("scroll-smooth", inter.variable, jetBrainsMono.variable, "antialiased")}>
       <body className="font-sans min-h-screen flex flex-col bg-background text-foreground">
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

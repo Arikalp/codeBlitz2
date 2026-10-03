@@ -8,7 +8,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-App_Router-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6?logo=typescript&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&logoColor=white)
-![AI](https://img.shields.io/badge/AI-Groq%20LLM-orange)
+![AI](https://img.shields.io/badge/AI-LangChain-orange)
 ![Status](https://img.shields.io/badge/Status-Hackathon%20Prototype-blueviolet)
 :::
 
@@ -546,7 +546,7 @@ with actual assets once captured; do not commit real patient data.
  npm run dev
 ```
 
-Open `http://localhost:3000` in your browser.
+Open `http://localhost:8000` in your browser.
 
 ### Environment Variables
 

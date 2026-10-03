@@ -30,6 +30,7 @@ function requireEnv(name: string): string {
 export function getServerEnv() {
   return {
     mongodbUri: requireEnv("MONGODB_URI"),
+    sessionSecret: requireEnv("SESSION_SECRET"),
   } as const;
 }
 
@@ -37,5 +38,5 @@ export function getServerEnv() {
  * Public (browser-safe) env vars.
  */
 export const publicEnv = {
-  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:8000",
 } as const;

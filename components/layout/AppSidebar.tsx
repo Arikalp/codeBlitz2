@@ -1,79 +1,171 @@
+/**
+ * components/layout/AppSidebar.tsx
+ *
+ * Left sidebar for the app shell (dashboard, timeline, documents, etc.).
+ * Client component — handles active route highlighting and mobile drawer.
+ */
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Activity,
-  FileText,
-  ShieldCheck,
-  MessageSquareHeart,
-  Settings,
-  AlertTriangle,
+  LayoutDashboard,
+  Clock,
+  FolderOpen,
+  Bot,
   User,
-  HeartPulse
+  Settings,
+  LogOut,
+  X,
+  Stethoscope,
+  ShieldCheck,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import { MOCK_PATIENT } from "@/lib/mock-data";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: Activity },
-  { href: "/dashboard/timeline", label: "Health Timeline", icon: HeartPulse },
-  { href: "/dashboard/documents", label: "Documents", icon: FileText },
-  { href: "/dashboard/consent", label: "Consent & Sharing", icon: ShieldCheck },
-  { href: "/dashboard/emergency", label: "Emergency Card", icon: AlertTriangle },
-  { href: "/dashboard/ai", label: "AI Assistant", icon: MessageSquareHeart },
-  { href: "/dashboard/profile", label: "Profile", icon: User },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
-];
+  { href: "/dashboard",          label: "Dashboard",   icon: LayoutDashboard },
+  { href: "/dashboard/timeline", label: "Timeline",    icon: Clock },
+  { href: "/dashboard/documents",label: "Documents",   icon: FolderOpen },
+  { href: "/dashboard/ai",       label: "AI Assistant",icon: Bot },
+  { href: "/dashboard/consent",  label: "Consent",     icon: ShieldCheck },
+  { href: "/dashboard/profile",  label: "Profile",     icon: User },
+] as const;
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
   const pathname = usePathname();
+  const { user, patient, practitioner, facility, logout } = useAuth();
+
+  const name =
+    patient?.name ||
+    practitioner?.name ||
+    (user?.role === "facility_admin" ? (facility?.name || "Facility Admin") : null) ||
+    MOCK_PATIENT.name;
+
+  const email = user?.email || MOCK_PATIENT.email;
+  const initial = name.charAt(0).toUpperCase();
 
   return (
-    <aside className="hidden w-64 flex-col border-r border-border/40 bg-sidebar lg:flex h-screen">
-      <div className="flex h-16 items-center px-6">
-        <Link href="/dashboard" className="flex items-center gap-2.5 font-semibold text-base text-foreground tracking-tight transition-opacity hover:opacity-80">
-          <div className="size-6 rounded-md bg-primary flex items-center justify-center">
-            <span aria-hidden="true" className="text-white text-[10px]">🩺</span>
-          </div>
-          <span>HealthSetu</span>
-        </Link>
-      </div>
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm lg:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      <nav className="flex-1 space-y-0.5 overflow-y-auto px-4 py-4">
-        {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 group active:scale-[0.98]",
-                isActive
-                  ? "bg-primary/8 text-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
+      {/* Sidebar panel */}
+      <aside
+        id="app-sidebar"
+        className={[
+          "fixed top-0 left-0 z-40 flex h-full w-64 flex-col border-r border-[var(--color-border)]",
+          "bg-[var(--color-surface)] transition-transform duration-300 ease-in-out",
+          "lg:translate-x-0 lg:static lg:z-auto",
+          isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full",
+        ].join(" ")}
+        aria-label="App navigation"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 font-bold text-[var(--color-brand-600)] text-lg"
+            onClick={onClose}
+          >
+            <Stethoscope size={22} strokeWidth={2} />
+            <span>HealthSetu</span>
+          </Link>
+          <button
+            type="button"
+            onClick={onClose}
+            className="lg:hidden p-1 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-muted)] transition-colors"
+            aria-label="Close menu"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Role badge */}
+        <div className="mx-4 mt-3 px-3 py-1.5 rounded-lg bg-[var(--color-brand-50)] border border-[var(--color-brand-200)] text-xs text-[var(--color-brand-700)] font-semibold flex items-center justify-between">
+          <span>Role: {user?.role ? user.role.toUpperCase() : "PATIENT"}</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        </div>
+
+        {/* User mini-card */}
+        <div className="mx-4 mt-3 p-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
+          <div className="flex items-center gap-3">
+            <div
+              className="h-9 w-9 flex-shrink-0 rounded-full flex items-center justify-center text-white text-sm font-bold"
+              style={{ background: "linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))" }}
             >
-              <item.icon className={cn(
-                "size-4 stroke-[1.5] transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-              )} aria-hidden="true" />
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="p-4 mt-auto">
-        <div className="flex items-center gap-3 rounded-xl p-3 hover:bg-muted/60 transition-colors cursor-pointer border border-transparent hover:border-border/50">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground font-semibold text-xs border border-border/50">
-            AS
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-sm font-medium truncate text-foreground">Arjun Sharma</span>
-            <span className="text-xs text-muted-foreground font-mono truncate">DEMO-1234</span>
+              {initial}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{name}</p>
+              <p className="text-xs text-[var(--color-text-muted)] truncate">{email}</p>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Primary navigation">
+          <ul className="space-y-1" role="list">
+            {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    onClick={onClose}
+                    className={[
+                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
+                      active
+                        ? "bg-[var(--color-brand-600)] text-white shadow-sm shadow-[var(--color-brand-500)]/30"
+                        : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-primary)]",
+                    ].join(" ")}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* Footer */}
+        <div className="px-3 py-4 border-t border-[var(--color-border)] space-y-1">
+          <Link
+            href="/dashboard/settings"
+            onClick={onClose}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+          >
+            <Settings size={18} strokeWidth={1.8} />
+            Settings
+          </Link>
+          <button
+            id="sidebar-signout-btn"
+            type="button"
+            onClick={() => {
+              onClose();
+              logout();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <LogOut size={18} strokeWidth={1.8} />
+            Sign Out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
