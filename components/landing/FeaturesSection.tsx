@@ -5,39 +5,41 @@
  * Server component.
  */
 
+import { FileHeart, FileSearch, Hospital, LockKeyhole, MessageCircle, ScanLine } from "lucide-react";
+
 const FEATURES = [
   {
-    icon: "📋",
+    icon: FileHeart,
     title: "Unified Health Timeline",
     description:
       "All your encounters, prescriptions, lab results, and discharge summaries in a single chronological view — searchable and filterable.",
   },
   {
-    icon: "🔐",
+    icon: LockKeyhole,
     title: "Patient-Controlled Consent",
     description:
       "You decide exactly which records to share, with which provider, and for how long. Revoke access at any time.",
   },
   {
-    icon: "🏥",
+    icon: Hospital,
     title: "Multi-Hospital Continuity",
     description:
       "When you visit Hospital B, the doctor can review your Hospital A records (with your permission) and add a new encounter to your timeline.",
   },
   {
-    icon: "🤖",
+    icon: MessageCircle,
     title: "AI-Assisted Explanations",
     description:
       "Plain-language summaries of your reports powered by Groq LLM — always grounded in your own records and clearly labelled as AI output.",
   },
   {
-    icon: "📄",
+    icon: ScanLine,
     title: "Document Understanding",
     description:
       "Upload scanned prescriptions or PDFs. Structured data is extracted via OCR and you verify before it enters your record.",
   },
   {
-    icon: "🇮🇳",
+    icon: FileSearch,
     title: "ABDM-Inspired Flow",
     description:
       "Simulated ABHA-style consent and record-retrieval flow for hackathon demonstration — clearly labelled, synthetic data throughout.",
@@ -49,7 +51,7 @@ export default function FeaturesSection() {
     <section
       id="features"
       aria-labelledby="features-heading"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-[var(--color-surface-muted)]"
+      className="py-24 px-4 sm:px-6 lg:px-8 bg-[var(--color-surface-muted)] border-y border-[var(--color-border)]"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section header */}
@@ -71,27 +73,13 @@ export default function FeaturesSection() {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           role="list"
         >
-          {FEATURES.map(({ icon, title, description }) => (
+          {FEATURES.map(({ icon: Icon, title, description }) => (
             <li
               key={title}
-              className="group relative flex flex-col gap-4 p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] transition-all duration-300 hover:border-[var(--color-brand-300)] hover:shadow-xl hover:-translate-y-1"
+              className="group relative flex flex-col gap-4 p-6 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] transition-all duration-300 hover:border-[var(--color-brand-300)] hover:shadow-xl hover:-translate-y-1"
             >
               {/* Hover glow */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(circle at top left, var(--color-brand-500)08, transparent 60%)",
-                }}
-              />
-
-              <span
-                aria-hidden="true"
-                className="text-4xl leading-none"
-              >
-                {icon}
-              </span>
+              <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--color-brand-50)] text-[var(--color-accent-500)]"><Icon size={21} strokeWidth={1.6} /></span>
 
               <div>
                 <h3 className="font-semibold text-lg text-[var(--color-text-primary)] mb-2">

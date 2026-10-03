@@ -21,7 +21,7 @@ export default function Card({ children, className = "", padding = "md" }: CardP
   return (
     <div
       className={[
-        "rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm",
+        "rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_8px_24px_rgba(94,52,0,0.06)]",
         paddingClasses[padding],
         className,
       ].join(" ")}

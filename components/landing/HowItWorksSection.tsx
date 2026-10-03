@@ -5,38 +5,40 @@
  * Server component.
  */
 
+import { CheckCircle2, FilePlus2, Hospital, LockKeyhole, Stethoscope } from "lucide-react";
+
 const STEPS = [
   {
     step: "01",
-    icon: "🏥",
+    icon: Hospital,
     title: "Visit Hospital A",
     description:
       "Your doctor creates an encounter, prescribes medication, and requests diagnostic tests. All records are added to your HealthSetu timeline.",
   },
   {
     step: "02",
-    icon: "🔒",
+    icon: LockKeyhole,
     title: "You Control Your Records",
     description:
       "Every record belongs to you. You can view your full timeline, review what's stored, and decide exactly what to share.",
   },
   {
     step: "03",
-    icon: "✅",
+    icon: CheckCircle2,
     title: "Grant Consent to Hospital B",
     description:
       "When you visit Hospital B, you receive a consent request. You approve the specific records, scope, and duration of access.",
   },
   {
     step: "04",
-    icon: "📖",
+    icon: Stethoscope,
     title: "Doctor Reviews Prior Records",
     description:
       "The Hospital B clinician reads your authorized records — prescription, scan, notes — and makes an informed clinical decision.",
   },
   {
     step: "05",
-    icon: "📝",
+    icon: FilePlus2,
     title: "New Encounter Is Recorded",
     description:
       "Hospital B adds a new, attributable encounter to your timeline. The history grows — nothing is overwritten or lost.",
@@ -66,22 +68,22 @@ export default function HowItWorksSection() {
 
         {/* Steps */}
         <ol className="relative flex flex-col gap-0" aria-label="HealthSetu steps">
-          {STEPS.map(({ step, icon, title, description }, idx) => (
+          {STEPS.map(({ step, icon: Icon, title, description }, idx) => (
             <li key={step} className="relative flex gap-6 pb-12 last:pb-0">
               {/* Vertical connector line */}
               {idx < STEPS.length - 1 && (
                 <div
                   aria-hidden="true"
-                  className="absolute left-6 top-12 bottom-0 w-px bg-gradient-to-b from-[var(--color-brand-300)] to-[var(--color-border)]"
+                  className="absolute left-6 top-12 bottom-0 w-px bg-[var(--color-border)]"
                 />
               )}
 
               {/* Step circle */}
               <div
                 aria-hidden="true"
-                className="relative z-10 flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold bg-[var(--color-brand-600)] text-white shadow-lg shadow-[var(--color-brand-500)]/30"
+                className="relative z-10 flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center bg-[var(--color-brand-300)] text-[var(--color-accent-500)]"
               >
-                {icon}
+                <Icon size={21} strokeWidth={1.6} />
               </div>
 
               {/* Content */}

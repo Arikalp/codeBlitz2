@@ -63,18 +63,16 @@ export default function PatientSummaryCard() {
 
   return (
     <Card className="relative overflow-hidden">
-      {/* Decorative gradient strip */}
+      {/* Quiet visual anchor for the patient summary */}
       <div
         aria-hidden="true"
-        className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
-        style={{ background: "linear-gradient(90deg, var(--color-brand-500), var(--color-accent-500))" }}
+        className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-brand-300)] rounded-t-lg"
       />
 
       <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
         {/* Avatar */}
         <div
-          className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl text-2xl font-bold text-white shadow-md"
-          style={{ background: "linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))" }}
+          className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-brand-300)] text-[var(--color-text-primary)] text-2xl font-bold"
           aria-hidden="true"
         >
           {name.charAt(0)}
@@ -85,12 +83,12 @@ export default function PatientSummaryCard() {
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <h2 className="text-xl font-bold text-[var(--color-text-primary)]">{name}</h2>
             {internalUuid ? (
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1">
+              <span className="text-[11px] px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1">
                 <Fingerprint size={12} />
                 UUID: {internalUuid.slice(0, 8)}...
               </span>
             ) : (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">
+              <span className="text-xs px-2 py-0.5 rounded-md bg-[var(--color-brand-50)] text-[var(--color-accent-500)] border border-[var(--color-border)] font-medium">
                 Profile loading...
               </span>
             )}

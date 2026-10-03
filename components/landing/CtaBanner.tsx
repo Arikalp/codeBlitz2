@@ -12,24 +12,8 @@ export default function CtaBanner() {
     <section
       id="use-case"
       aria-labelledby="cta-heading"
-      className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[var(--color-accent-500)]"
     >
-      {/* Gradient background */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--color-brand-600), var(--color-accent-500))",
-        }}
-      />
-
-      {/* Decorative circles */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-white opacity-5" />
-        <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full bg-white opacity-5" />
-      </div>
-
       <div className="max-w-3xl mx-auto text-center text-white">
         <h2 id="cta-heading" className="text-3xl sm:text-4xl font-bold mb-4">
           Ready to connect your health journey?

@@ -6,7 +6,7 @@
  */
 
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 // ─── Font ─────────────────────────────────────────────────────────────────
@@ -14,6 +14,12 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -44,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} scroll-smooth`}>
+    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} scroll-smooth`}>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <AuthProvider>{children}</AuthProvider>
       </body>

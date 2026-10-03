@@ -32,15 +32,15 @@ const CATEGORY_ICONS: Record<string, typeof FileText> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  prescription:      "bg-blue-50 text-blue-600",
-  lab_report:        "bg-violet-50 text-violet-600",
+  prescription:      "bg-[var(--color-brand-50)] text-[var(--color-accent-500)]",
+  lab_report:        "bg-[var(--color-brand-50)] text-[var(--color-accent-500)]",
   ct_mri_report:     "bg-amber-50 text-amber-600",
   xray_report:       "bg-amber-50 text-amber-600",
   imaging:           "bg-amber-50 text-amber-600",
   discharge_summary: "bg-slate-100 text-slate-600",
-  consultation_note: "bg-teal-50 text-teal-600",
+  consultation_note: "bg-stone-50 text-stone-700",
   vaccination:       "bg-emerald-50 text-emerald-600",
-  consultation:      "bg-teal-50 text-teal-600",
+  consultation:      "bg-stone-50 text-stone-700",
   other:             "bg-gray-100 text-gray-600",
 };
 
@@ -66,12 +66,12 @@ export default function MedicalRecordCard({ record, onClick }: MedicalRecordCard
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left group flex items-start gap-4 p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-brand-300)] hover:shadow-md transition-all duration-200"
+      className="w-full text-left group flex items-start gap-4 p-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-brand-300)] hover:shadow-md transition-all duration-200"
     >
       {/* Icon */}
       <div
         className={[
-          "flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-xl",
+          "flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-md",
           CATEGORY_COLORS[record.category] || "bg-gray-50 text-gray-600",
         ].join(" ")}
         aria-hidden="true"

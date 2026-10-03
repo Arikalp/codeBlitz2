@@ -78,11 +78,11 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 font-bold text-[var(--color-brand-600)] text-lg"
+            className="flex items-center gap-2 font-bold text-[var(--color-accent-500)] text-lg"
             onClick={onClose}
           >
             <Stethoscope size={22} strokeWidth={2} />
-            <span>HealthSetu</span>
+            <span className="font-mono tracking-tight">HealthSetu</span>
           </Link>
           <button
             type="button"
@@ -95,17 +95,16 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
         </div>
 
         {/* Role badge */}
-        <div className="mx-4 mt-3 px-3 py-1.5 rounded-lg bg-[var(--color-brand-50)] border border-[var(--color-brand-200)] text-xs text-[var(--color-brand-700)] font-semibold flex items-center justify-between">
+        <div className="mx-4 mt-3 px-3 py-1.5 rounded-md bg-[var(--color-brand-50)] border border-[var(--color-border)] text-xs text-[var(--color-accent-500)] font-semibold flex items-center justify-between">
           <span>Role: {user?.role ? user.role.toUpperCase() : "PATIENT"}</span>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
 
         {/* User mini-card */}
-        <div className="mx-4 mt-3 p-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
+        <div className="mx-4 mt-3 p-3 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
           <div className="flex items-center gap-3">
             <div
-              className="h-9 w-9 flex-shrink-0 rounded-full flex items-center justify-center text-white text-sm font-bold"
-              style={{ background: "linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))" }}
+              className="h-9 w-9 flex-shrink-0 rounded-md flex items-center justify-center bg-[var(--color-brand-300)] text-[var(--color-text-primary)] text-sm font-bold"
             >
               {initial}
             </div>
@@ -127,9 +126,9 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
                     href={href}
                     onClick={onClose}
                     className={[
-                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
+                      "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150",
                       active
-                        ? "bg-[var(--color-brand-600)] text-white shadow-sm shadow-[var(--color-brand-500)]/30"
+                        ? "bg-[var(--color-accent-500)] text-white shadow-sm"
                         : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-primary)]",
                     ].join(" ")}
                     aria-current={active ? "page" : undefined}
@@ -148,7 +147,7 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
           <Link
             href="/dashboard/settings"
             onClick={onClose}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-primary)] transition-colors"
           >
             <Settings size={18} strokeWidth={1.8} />
             Settings

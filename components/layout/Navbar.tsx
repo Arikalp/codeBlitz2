@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
+import { HeartPulse, Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "#features", label: "Features" },
@@ -47,11 +48,11 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-xl text-[var(--color-brand-600)]"
+          className="flex items-center gap-2 font-bold text-xl text-[var(--color-accent-500)]"
           aria-label="HealthSetu home"
         >
-          <span aria-hidden="true" className="text-2xl">🩺</span>
-          <span>HealthSetu</span>
+          <HeartPulse aria-hidden="true" size={22} strokeWidth={1.7} />
+          <span className="font-mono tracking-tight">HealthSetu</span>
         </Link>
 
         {/* Desktop Links */}
@@ -60,7 +61,7 @@ export default function Navbar() {
             <li key={href}>
               <a
                 href={href}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)] transition-colors"
+                  className="px-4 py-2 rounded-md text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)] transition-colors"
               >
                 {label}
               </a>
@@ -103,15 +104,13 @@ export default function Navbar() {
         {/* Mobile menu button */}
         <button
           id="mobile-menu-button"
-          className="md:hidden p-2 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] transition-colors"
+          className="md:hidden p-2 rounded-md text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] transition-colors"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => setMenuOpen((v) => !v)}
         >
-          <span aria-hidden="true" className="block w-5 h-0.5 bg-current mb-1 transition-transform" style={{ transform: menuOpen ? "rotate(45deg) translateY(6px)" : undefined }} />
-          <span aria-hidden="true" className="block w-5 h-0.5 bg-current mb-1 transition-opacity" style={{ opacity: menuOpen ? 0 : 1 }} />
-          <span aria-hidden="true" className="block w-5 h-0.5 bg-current transition-transform" style={{ transform: menuOpen ? "rotate(-45deg) translateY(-6px)" : undefined }} />
+          {menuOpen ? <X size={20} strokeWidth={1.7} /> : <Menu size={20} strokeWidth={1.7} />}
         </button>
       </nav>
 

@@ -145,28 +145,28 @@ export default function DashboardContent() {
             label: "Total Records",
             value: totalRecordsCount,
             icon: FileText,
-            color: "text-blue-600",
-            bg: "bg-blue-50",
+            color: "text-[var(--color-accent-500)]",
+            bg: "bg-[var(--color-brand-50)]",
           },
           {
             label: "Documents",
             value: totalDocsCount,
             icon: Upload,
-            color: "text-violet-600",
-            bg: "bg-violet-50",
+            color: "text-[var(--color-accent-500)]",
+            bg: "bg-[var(--color-brand-50)]",
           },
           {
             label: "Pending Consents",
             value: 0,
             icon: ShieldCheck,
-            color: "text-amber-600",
+            color: "text-amber-700",
             bg: "bg-amber-50",
           },
           {
             label: "Appointments",
             value: 0,
             icon: CalendarDays,
-            color: "text-emerald-600",
+            color: "text-emerald-700",
             bg: "bg-emerald-50",
           },
         ].map(({ label, value, icon: Icon, color, bg }) => (
@@ -197,7 +197,7 @@ export default function DashboardContent() {
           <button
             type="button"
             onClick={() => setIsUploadOpen(true)}
-            className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-[var(--color-brand-300)] bg-[var(--color-brand-50)] hover:bg-[var(--color-brand-100)] transition-colors text-left group"
+            className="flex items-center gap-3 p-4 rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-brand-50)] hover:bg-[var(--color-brand-100)] transition-colors text-left group"
           >
             <Upload size={20} className="text-[var(--color-brand-600)]" />
             <span className="text-sm font-medium text-[var(--color-brand-700)]">
@@ -206,17 +206,17 @@ export default function DashboardContent() {
           </button>
           <Link
             href="/dashboard/timeline"
-            className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-[var(--color-accent-400)] bg-teal-50 hover:bg-teal-100 transition-colors group"
+            className="flex items-center gap-3 p-4 rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-brand-50)] transition-colors group"
           >
             <Clock size={20} className="text-[var(--color-accent-600)]" />
-            <span className="text-sm font-medium text-teal-700">View Medical Timeline</span>
+            <span className="text-sm font-medium text-[var(--color-accent-500)]">View Medical Timeline</span>
           </Link>
           <Link
             href="/dashboard/ai"
-            className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-violet-300 bg-violet-50 hover:bg-violet-100 transition-colors group"
+            className="flex items-center gap-3 p-4 rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-brand-50)] transition-colors group"
           >
             <Activity size={20} className="text-violet-600" />
-            <span className="text-sm font-medium text-violet-700">Ask AI Assistant</span>
+            <span className="text-sm font-medium text-[var(--color-accent-500)]">Ask AI Assistant</span>
           </Link>
         </div>
       </div>

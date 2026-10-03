@@ -33,7 +33,7 @@ export default function AppShell({ title, children }: AppShellProps) {
         <main
           id="main-content"
           tabIndex={-1}
-          className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8"
+          className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10"
         >
           {children}
         </main>

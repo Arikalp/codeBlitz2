@@ -19,13 +19,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-[var(--color-brand-600)] text-white hover:bg-[var(--color-brand-700)] " +
-    "shadow-md hover:shadow-lg active:scale-[0.98]",
-  secondary:
     "bg-[var(--color-accent-500)] text-white hover:bg-[var(--color-accent-600)] " +
-    "shadow-md hover:shadow-lg active:scale-[0.98]",
+    "shadow-sm hover:shadow-md active:scale-[0.98]",
+  secondary:
+    "bg-[var(--color-brand-300)] text-[var(--color-text-primary)] hover:bg-[var(--color-brand-400)] " +
+    "shadow-sm hover:shadow-md active:scale-[0.98]",
   outline:
-    "border border-[var(--color-brand-500)] text-[var(--color-brand-600)] " +
+    "border border-[var(--color-border)] text-[var(--color-accent-500)] " +
     "hover:bg-[var(--color-brand-50)] active:scale-[0.98]",
   ghost:
     "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] " +
@@ -33,9 +33,9 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-sm rounded-lg gap-1.5",
-  md: "px-5 py-2.5 text-base rounded-xl gap-2",
-  lg: "px-8 py-3.5 text-lg rounded-2xl gap-2.5",
+  sm: "px-3 py-1.5 text-sm rounded-md gap-1.5",
+  md: "px-5 py-2.5 text-base rounded-md gap-2",
+  lg: "px-8 py-3.5 text-lg rounded-md gap-2.5",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
