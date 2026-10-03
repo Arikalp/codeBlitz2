@@ -75,14 +75,17 @@ export default function DashboardContent() {
 
         if (timelineRes.status === "fulfilled" && timelineRes.value.ok) {
           const data = await timelineRes.value.json();
-          setTimelineRecords(data.records || []);
+          setTimelineRecords(data.data?.records || []);
         } else if (timelineRes.status === "rejected" || (timelineRes.status === "fulfilled" && !timelineRes.value.ok)) {
           setApiError("Could not connect to the database. Please check your MongoDB Atlas IP whitelist or connection settings.");
         }
 
         if (docsRes.status === "fulfilled" && docsRes.value.ok) {
           const docsData = await docsRes.value.json();
-          setDocCount(docsData.total || (docsData.documents ? docsData.documents.length : 0));
+          setDocCount(
+            docsData.data?.total ??
+            (docsData.data?.documents ? docsData.data.documents.length : 0)
+          );
         }
       } catch (err) {
         console.error("Dashboard data fetch error:", err);
@@ -111,7 +114,7 @@ export default function DashboardContent() {
         const res = await fetch(`/api/documents/${record.documentId}`);
         if (res.ok) {
           const data = await res.json();
-          setPreviewDoc(data.document);
+          setPreviewDoc(data.data?.document);
         }
       } catch (err) {
         console.error("Failed to load document preview:", err);

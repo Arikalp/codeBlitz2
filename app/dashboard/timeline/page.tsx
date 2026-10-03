@@ -31,7 +31,6 @@ import DocumentPreviewModal from "@/components/documents/DocumentPreviewModal";
 import UploadDocumentModal from "@/components/documents/UploadDocumentModal";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
-import { MOCK_RECORDS } from "@/lib/mock-data";
 
 const CATEGORIES = [
   { id: "all", label: "All" },
@@ -62,7 +61,6 @@ export default function TimelinePage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
-  const [useSampleData, setUseSampleData] = useState(false);
 
   // Modals state
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -86,7 +84,7 @@ export default function TimelinePage() {
 
         const data = await res.json();
         if (!ignore) {
-          setRecords(data.records || []);
+          setRecords(data.data?.records || []);
           setLoading(false);
         }
       } catch (err) {
@@ -116,7 +114,7 @@ export default function TimelinePage() {
         throw new Error("Unable to load document details");
       }
       const data = await res.json();
-      setPreviewDoc(data.document);
+      setPreviewDoc(data.data?.document);
     } catch (err) {
       console.error("Failed to load document preview:", err);
       // Fallback preview object with minimal metadata
@@ -131,23 +129,8 @@ export default function TimelinePage() {
     }
   };
 
-  // Determine active dataset: live records or sample data
-  const baseRecords: TimelineRecordItem[] =
-    records.length > 0 || !useSampleData
-      ? records
-      : MOCK_RECORDS.map((r) => ({
-          id: r.id,
-          title: r.title,
-          category: r.category,
-          clinicalDate: r.clinicalDate,
-          facility: r.facility,
-          doctor: r.doctor,
-          summary: r.summary,
-          tags: r.tags,
-          hasDocument: r.hasDocument,
-          documentId: null,
-          source: "mock",
-        }));
+  // Only show real records from the API — no mock fallback
+  const baseRecords: TimelineRecordItem[] = records;
 
   // Filtering
   const filteredRecords = baseRecords.filter((rec) => {
@@ -286,24 +269,13 @@ export default function TimelinePage() {
           </div>
         )}
 
-        {/* Sample data banner if patient has no live records */}
-        {!loading && records.length === 0 && (
-          <div className="p-3.5 rounded-xl bg-teal-50/80 border border-teal-200 text-xs text-teal-800 flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <Sparkles size={15} className="text-teal-600 flex-shrink-0" />
-              <span>
-                {useSampleData
-                  ? "Currently showing synthetic sample records to demonstrate the longitudinal timeline."
-                  : "You haven't uploaded any medical records to your database yet."}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setUseSampleData(!useSampleData)}
-              className="text-xs font-semibold text-teal-700 underline hover:text-teal-900"
-            >
-              {useSampleData ? "Hide Sample Records" : "Preview Sample Records"}
-            </button>
+        {/* Empty state when patient has no records yet */}
+        {!loading && !error && records.length === 0 && (
+          <div className="p-3.5 rounded-xl bg-teal-50/80 border border-teal-200 text-xs text-teal-800 flex items-center gap-2">
+            <Sparkles size={15} className="text-teal-600 flex-shrink-0" />
+            <span>
+              No records found yet. Upload your first medical document using <strong>Add Record</strong> above and it will appear here instantly.
+            </span>
           </div>
         )}
 
