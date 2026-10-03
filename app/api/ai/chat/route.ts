@@ -347,7 +347,7 @@ export async function POST(req: NextRequest) {
         stream = await groq.chat.completions.create({
           model,
           messages,
-          max_tokens: 2000,
+          max_tokens: 950,
           temperature: 0.3,
           stream: true,
         });
