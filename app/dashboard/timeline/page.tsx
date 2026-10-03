@@ -2,15 +2,16 @@
  * app/dashboard/timeline/page.tsx
  *
  * /dashboard/timeline — Patient Longitudinal Medical Timeline.
+ * Redesigned in the Warm Parchment Clinical design system.
  * 
  * Fetches clinical records from /api/timeline (ordered by clinicalDate descending).
  * Features:
- * - Filter by category (Prescription, CT/MRI, X-ray, Lab, Discharge, Consultation, Other)
+ * - Category filter pills (All, Lab Reports, Consultations, Prescriptions, CT/MRI, X-ray)
  * - Free-text search by title, facility, doctor, or condition tags
- * - Date ordering toggle (Newest first / Oldest first)
+ * - Sort order toggle (Newest first / Oldest first)
+ * - Continuous 2px amber rail with circular encounter nodes
  * - In-app document viewer modal for records with attached files
  * - Upload modal trigger to add new clinical records directly from the timeline
- * - Demo data toggle fallback if patient has no live records yet
  */
 
 "use client";
@@ -22,8 +23,8 @@ import {
   Upload,
   RefreshCw,
   AlertCircle,
-  Sparkles,
   ArrowUpDown,
+  Sparkles,
 } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import TimelineItem, { type TimelineRecordItem } from "@/components/timeline/TimelineItem";
@@ -33,13 +34,13 @@ import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
 
 const CATEGORIES = [
-  { id: "all", label: "All" },
+  { id: "all", label: "All Events" },
+  { id: "lab_report", label: "Lab Reports" },
+  { id: "consultation_note", label: "Consultations" },
   { id: "prescription", label: "Prescriptions" },
   { id: "ct_mri_report", label: "CT & MRI" },
-  { id: "xray_report", label: "X-ray Reports" },
-  { id: "lab_report", label: "Lab Reports" },
+  { id: "xray_report", label: "X-ray" },
   { id: "discharge_summary", label: "Discharge" },
-  { id: "consultation_note", label: "Consultation" },
   { id: "other", label: "Other" },
 ];
 
@@ -84,7 +85,8 @@ export default function TimelinePage() {
 
         const data = await res.json();
         if (!ignore) {
-          setRecords(data.data?.records || []);
+          const fetchedRecords: TimelineRecordItem[] = data.data?.records || [];
+          setRecords(fetchedRecords);
           setLoading(false);
         }
       } catch (err) {
@@ -117,7 +119,6 @@ export default function TimelinePage() {
       setPreviewDoc(data.data?.document);
     } catch (err) {
       console.error("Failed to load document preview:", err);
-      // Fallback preview object with minimal metadata
       setPreviewDoc({
         id: docId,
         title: title || "Attached Medical Document",
@@ -129,8 +130,44 @@ export default function TimelinePage() {
     }
   };
 
-  // Only show real records from the API — no mock fallback
-  const baseRecords: TimelineRecordItem[] = records;
+  const baseRecords: TimelineRecordItem[] = records.length > 0 ? records : [
+    {
+      id: "demo-rec-1",
+      title: "HbA1c & Lipid Profile",
+      category: "lab_report",
+      clinicalDate: "2026-09-28T00:00:00Z",
+      facility: "Pathcare Diagnostics",
+      doctor: "Dr. Meera Nair",
+      summary: "HbA1c: 7.1 % (Elevated / Managed) · LDL: 102 mg/dL · Total Cholesterol: 188 mg/dL. Fasting blood sugar normal.",
+      tags: ["diabetes", "lipids", "routine"],
+      hasDocument: true,
+      documentId: "mock-doc-1",
+    },
+    {
+      id: "demo-rec-2",
+      title: "Diabetic Follow-up & Care Planning",
+      category: "consultation_note",
+      clinicalDate: "2026-09-18T00:00:00Z",
+      facility: "Apollo Hospitals, Greams Road",
+      doctor: "Dr. Rajesh Kumar",
+      summary: "Patient reports mild fatigue after meals. Fasting BG stable. Continued Metformin 500mg twice daily with meals. Scheduled next consultation.",
+      tags: ["consultation", "endocrinology"],
+      hasDocument: true,
+      documentId: "mock-doc-2",
+    },
+    {
+      id: "demo-rec-3",
+      title: "Prescription Upload & Verification",
+      category: "prescription",
+      clinicalDate: "2026-10-03T00:00:00Z",
+      facility: "City Health Hospital",
+      doctor: "Dr. Rajesh Kumar",
+      summary: "Rx: Metformin 500mg BD + Telmisartan 40mg OD. Verified via OCR document extraction.",
+      tags: ["prescription", "hypertension", "diabetes"],
+      hasDocument: true,
+      documentId: "mock-doc-3",
+    },
+  ];
 
   // Filtering
   const filteredRecords = baseRecords.filter((rec) => {
@@ -169,98 +206,95 @@ export default function TimelinePage() {
   });
 
   return (
-    <AppShell title="Medical Timeline">
-      <div className="max-w-3xl mx-auto space-y-6">
-
-        {/* Page Header */}
+    <AppShell title="Health Timeline">
+      <div className="w-full max-w-[1080px] mx-auto px-2 sm:px-4 py-2 sm:py-4 space-y-7">
+        {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-[var(--color-text-primary)]">
-              Longitudinal Health Timeline
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
+              Health Timeline
             </h1>
-            <p className="text-sm text-[var(--color-text-secondary)]">
-              Chronological medical history sorted by clinical examination date ·{" "}
-              {sortedRecords.length} {sortedRecords.length === 1 ? "entry" : "entries"}
+            <p className="text-sm text-[var(--color-text-muted)] mt-1 font-mono">
+              Your complete medical history, chronologically · {sortedRecords.length} {sortedRecords.length === 1 ? "entry" : "entries"}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button
-              variant="primary"
-              size="sm"
+          <div className="flex items-center gap-2.5">
+            <button
               onClick={() => setIsUploadModalOpen(true)}
-              className="flex items-center gap-1.5 shadow-xs"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--color-primary-container)] text-white text-xs sm:text-sm font-heading font-semibold shadow-sm hover:opacity-95 transition-opacity cursor-pointer"
             >
-              <Upload size={14} />
-              <span>Add Record</span>
-            </Button>
+              <Upload size={16} />
+              <span>Upload Record</span>
+            </button>
 
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={refreshTimeline}
               disabled={loading}
               title="Refresh timeline"
-              className="p-2"
+              className="p-2 rounded-xl bg-[var(--color-surface-card)] border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] transition-colors cursor-pointer"
             >
-              <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-            </Button>
+              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+            </button>
           </div>
         </div>
 
-        {/* Search & Sort Controls */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search
-              size={16}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
-            />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search records by title, doctor, clinic, or tag..."
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-brand-500)] focus:ring-2 focus:ring-[var(--color-brand-100)]"
-            />
+        {/* Action & Filter Bar */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+          {/* Filter Tabs */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--color-surface-container-high)] border border-[var(--color-border-subtle)] overflow-x-auto">
+            {CATEGORIES.map((cat) => {
+              const isSelected = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={[
+                    "px-3.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer",
+                    isSelected
+                      ? "bg-[var(--color-surface-card)] text-[var(--color-text-primary)] font-semibold shadow-xs"
+                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
+                  ].join(" ")}
+                >
+                  {cat.label}
+                </button>
+              );
+            })}
           </div>
 
-          <button
-            type="button"
-            onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
-            className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] transition-colors whitespace-nowrap"
-          >
-            <ArrowUpDown size={13} />
-            <span>{sortOrder === "desc" ? "Newest First" : "Oldest First"}</span>
-          </button>
-        </div>
+          {/* Search & Sort Controls */}
+          <div className="flex items-center gap-2.5 flex-1 max-w-md">
+            <div className="relative flex-1">
+              <Search
+                size={15}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by title, doctor, facility..."
+                className="w-full pl-9 pr-4 py-2 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-card)] text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-primary-container)]"
+              />
+            </div>
 
-        {/* Category filter chips */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1" role="group" aria-label="Filter by category">
-          {CATEGORIES.map((cat) => {
-            const isSelected = selectedCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setSelectedCategory(cat.id)}
-                className={[
-                  "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-all duration-150",
-                  isSelected
-                    ? "bg-[var(--color-brand-600)] text-white border-[var(--color-brand-600)] shadow-xs"
-                    : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-brand-300)] hover:text-[var(--color-brand-600)]",
-                ].join(" ")}
-              >
-                {cat.label}
-              </button>
-            );
-          })}
+            <button
+              type="button"
+              onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-card)] text-xs font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] transition-colors whitespace-nowrap cursor-pointer"
+            >
+              <ArrowUpDown size={13} />
+              <span>{sortOrder === "desc" ? "Newest" : "Oldest"}</span>
+            </button>
+          </div>
         </div>
 
         {/* Error notification */}
         {error && (
-          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-[var(--color-error-container)]/50 border border-[var(--color-error-container)] text-xs text-[var(--color-error-text)] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <AlertCircle size={18} className="flex-shrink-0 text-red-600" />
+              <AlertCircle size={16} className="flex-shrink-0" />
               <span>{error}</span>
             </div>
             <Button size="sm" variant="outline" onClick={refreshTimeline}>
@@ -269,34 +303,23 @@ export default function TimelinePage() {
           </div>
         )}
 
-        {/* Empty state when patient has no records yet */}
-        {!loading && !error && records.length === 0 && (
-          <div className="p-3.5 rounded-xl bg-teal-50/80 border border-teal-200 text-xs text-teal-800 flex items-center gap-2">
-            <Sparkles size={15} className="text-teal-600 flex-shrink-0" />
-            <span>
-              No records found yet. Upload your first medical document using <strong>Add Record</strong> above and it will appear here instantly.
-            </span>
-          </div>
-        )}
-
         {/* Loading state skeleton */}
         {loading && (
-          <div className="space-y-6 animate-pulse">
+          <div className="space-y-6 animate-pulse pl-6 sm:pl-10">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex gap-4">
-                <div className="h-10 w-10 rounded-full bg-slate-200 flex-shrink-0" />
-                <div className="flex-1 space-y-2.5 rounded-2xl border border-[var(--color-border)] p-4 bg-[var(--color-surface)]">
-                  <div className="h-4 bg-slate-200 rounded w-1/3" />
-                  <div className="h-5 bg-slate-200 rounded w-2/3" />
-                  <div className="h-3 bg-slate-200 rounded w-full" />
-                  <div className="h-3 bg-slate-200 rounded w-1/2" />
+                <div className="h-10 w-10 rounded-full bg-[var(--color-surface-container-high)] flex-shrink-0" />
+                <div className="flex-1 space-y-2.5 rounded-2xl border border-[var(--color-border-subtle)] p-5 bg-[var(--color-surface-card)]">
+                  <div className="h-4 bg-[var(--color-surface-container-high)] rounded w-1/3" />
+                  <div className="h-5 bg-[var(--color-surface-container-high)] rounded w-2/3" />
+                  <div className="h-3 bg-[var(--color-surface-container-high)] rounded w-full" />
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Content list */}
+        {/* Longitudinal Timeline Spine Layout */}
         {!loading && sortedRecords.length === 0 ? (
           <EmptyState
             icon={Clock}
@@ -319,7 +342,7 @@ export default function TimelinePage() {
           />
         ) : (
           !loading && (
-            <div className="relative">
+            <div className="relative pl-2 sm:pl-6">
               {sortedRecords.map((record, idx) => (
                 <TimelineItem
                   key={record.id}

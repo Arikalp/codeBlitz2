@@ -37,22 +37,31 @@ export default function Navbar() {
       className={[
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-[var(--color-surface)]/90 backdrop-blur-md border-b border-[var(--color-border)] shadow-sm"
-          : "bg-transparent",
+          ? "bg-[#FAF6F0]/95 backdrop-blur-md border-b border-[var(--color-border-subtle)] shadow-sm"
+          : "bg-[#FAF6F0]/70 backdrop-blur-sm border-b border-[var(--color-border-subtle)]/50",
       ].join(" ")}
     >
       <nav
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20"
         aria-label="Main navigation"
       >
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-xl text-[var(--color-accent-500)]"
+          className="flex items-center gap-3 group"
           aria-label="HealthSetu home"
         >
-          <HeartPulse aria-hidden="true" size={22} strokeWidth={1.7} />
-          <span className="font-mono tracking-tight">HealthSetu</span>
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-container)] text-white flex items-center justify-center shadow-warm transition-transform group-hover:scale-105">
+            <HeartPulse aria-hidden="true" size={22} strokeWidth={2.2} />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-heading font-bold text-xl text-[var(--color-text-primary)] tracking-tight leading-none">
+              HealthSetu
+            </span>
+            <span className="text-[10px] font-semibold tracking-wider uppercase text-[var(--color-text-muted)] mt-0.5">
+              Clinical Care Bridge
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Links */}
@@ -61,7 +70,7 @@ export default function Navbar() {
             <li key={href}>
               <a
                 href={href}
-                  className="px-4 py-2 rounded-md text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)] transition-colors"
+                className="px-3.5 py-2 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
               >
                 {label}
               </a>
@@ -73,8 +82,11 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           {isAuthenticated ? (
             <>
-              <Link href="/dashboard/profile" className="flex items-center gap-2 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-brand-300)] transition-colors">
-                <span className="w-5 h-5 rounded-full bg-[var(--color-brand-500)] text-white flex items-center justify-center text-[10px] font-bold">
+              <Link
+                href="/dashboard/profile"
+                className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
+              >
+                <span className="w-6 h-6 rounded-full bg-[var(--color-timeline-node-bg)] text-[var(--color-text-primary)] flex items-center justify-center text-[10px] font-bold">
                   {displayName.charAt(0).toUpperCase()}
                 </span>
                 <span className="truncate max-w-[120px]">{displayName}</span>
@@ -104,13 +116,13 @@ export default function Navbar() {
         {/* Mobile menu button */}
         <button
           id="mobile-menu-button"
-          className="md:hidden p-2 rounded-md text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] transition-colors"
+          className="md:hidden p-2 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => setMenuOpen((v) => !v)}
         >
-          {menuOpen ? <X size={20} strokeWidth={1.7} /> : <Menu size={20} strokeWidth={1.7} />}
+          {menuOpen ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={2} />}
         </button>
       </nav>
 
@@ -118,7 +130,7 @@ export default function Navbar() {
       {menuOpen && (
         <div
           id="mobile-menu"
-          className="md:hidden bg-[var(--color-surface)] border-b border-[var(--color-border)] px-4 pb-4 animate-fade-in"
+          className="md:hidden bg-[var(--color-surface-card)] border-b border-[var(--color-border-subtle)] px-4 py-4 animate-fade-in shadow-card"
         >
           <ul className="flex flex-col gap-1" role="list">
             {NAV_LINKS.map(({ href, label }) => (
@@ -126,7 +138,7 @@ export default function Navbar() {
                 <a
                   href={href}
                   onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-2.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)] transition-colors"
+                  className="block px-4 py-2.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-container-high)] transition-colors"
                 >
                   {label}
                 </a>

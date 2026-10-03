@@ -1,9 +1,9 @@
 /**
  * components/timeline/TimelineItem.tsx
  *
- * A single entry in the longitudinal medical timeline.
- * Displays clinical event date, facility, doctor, category badge, and interactive
- * document view triggers.
+ * A single entry in the longitudinal medical timeline styled with the
+ * Warm Parchment Clinical design system: continuous amber connector rail,
+ * circular node icons, and inset clinical metrics sub-cards.
  */
 
 "use client";
@@ -16,7 +16,12 @@ import {
   Syringe,
   Stethoscope,
   ExternalLink,
+  CheckCircle,
+  Building2,
+  UserRound,
+  Bot,
 } from "lucide-react";
+import Link from "next/link";
 import { RECORD_CATEGORY_LABELS } from "@/validators/documents";
 
 export interface TimelineRecordItem {
@@ -46,19 +51,6 @@ const ICONS: Record<string, typeof FileText> = {
   other: FileText,
 };
 
-const ICON_COLORS: Record<string, string> = {
-  prescription: "bg-blue-100 text-blue-600 border-blue-200",
-  ct_mri_report: "bg-amber-100 text-amber-600 border-amber-200",
-  xray_report: "bg-amber-100 text-amber-600 border-amber-200",
-  imaging: "bg-amber-100 text-amber-600 border-amber-200",
-  lab_report: "bg-violet-100 text-violet-600 border-violet-200",
-  discharge_summary: "bg-slate-100 text-slate-600 border-slate-200",
-  consultation_note: "bg-teal-100 text-teal-600 border-teal-200",
-  consultation: "bg-teal-100 text-teal-600 border-teal-200",
-  vaccination: "bg-emerald-100 text-emerald-600 border-emerald-200",
-  other: "bg-gray-100 text-gray-600 border-gray-200",
-};
-
 interface TimelineItemProps {
   record: TimelineRecordItem;
   isLast?: boolean;
@@ -71,82 +63,126 @@ export default function TimelineItem({
   onViewDocument,
 }: TimelineItemProps) {
   const Icon = ICONS[record.category] || FileText;
-  const iconColor = ICON_COLORS[record.category] || "bg-gray-100 text-gray-600 border-gray-200";
 
   const categoryLabel =
     RECORD_CATEGORY_LABELS[record.category as keyof typeof RECORD_CATEGORY_LABELS] ||
     record.category.replace(/_/g, " ");
 
+  const isLab = record.category === "lab_report";
+  const isConsultation = record.category.includes("consultation");
+  const isPrescription = record.category === "prescription";
+
+  const badgeStyle = isLab
+    ? "bg-[var(--color-badge-lab-bg)] text-[var(--color-badge-lab-text)] border-[#EAE4D7]"
+    : isConsultation
+    ? "bg-[var(--color-badge-consult-bg)] text-[var(--color-badge-consult-text)] border-[#F9DECB]"
+    : isPrescription
+    ? "bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] border-[#F9DECB]"
+    : "bg-[var(--color-surface-container-high)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)]";
+
   return (
-    <div className="relative flex gap-4">
-      {/* Connector line */}
+    <div className="relative flex items-start gap-4 sm:gap-6 group">
+      {/* Continuous Amber Spine Rail */}
       {!isLast && (
         <div
           aria-hidden="true"
-          className="absolute left-5 top-10 bottom-0 w-px bg-[var(--color-border)]"
+          className="absolute left-[19px] sm:left-[21px] top-6 bottom-0 w-[2px] bg-[var(--color-timeline-connector)] opacity-60"
         />
       )}
 
-      {/* Icon node */}
+      {/* Node Icon */}
       <div
-        className={[
-          "relative z-10 flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full border-2 shadow-xs",
-          iconColor,
-        ].join(" ")}
+        className="relative z-10 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[var(--color-timeline-node-bg)] border border-[var(--color-border-subtle)] shadow-sm flex items-center justify-center shrink-0 text-[var(--color-primary-container)] group-hover:scale-105 transition-transform"
         aria-hidden="true"
       >
-        <Icon size={16} strokeWidth={2} />
+        <Icon size={18} strokeWidth={2.2} />
       </div>
 
-      {/* Content card */}
-      <div className="flex-1 pb-8">
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 hover:border-[var(--color-brand-300)] hover:shadow-md transition-all duration-200">
-          <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-            <div>
-              <p className="text-xs font-semibold text-[var(--color-brand-700)] mb-0.5">
-                Clinical Date: {formatDate(record.clinicalDate)}
-              </p>
-              <h3 className="font-bold text-sm text-[var(--color-text-primary)]">
-                {record.title}
-              </h3>
+      {/* Card Container */}
+      <div className="flex-1 pb-10 min-w-0">
+        <div className="bg-[var(--color-surface-card)] rounded-2xl border border-[var(--color-border-subtle)] p-5 sm:p-6 shadow-sm hover:shadow-warm hover:border-[var(--color-primary-container)]/40 transition-all duration-200">
+          {/* Card Header & Metadata */}
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2">
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono uppercase border font-semibold ${badgeStyle}`}>
+                {categoryLabel}
+              </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--color-badge-verified-bg)] text-[var(--color-secondary-sage)] border border-[#D4EAD9] text-[11px] font-mono font-semibold uppercase tracking-wider">
+                <CheckCircle size={11} /> Verified
+              </span>
             </div>
-            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-text-secondary)]">
-              {categoryLabel}
+            <span className="font-mono text-xs text-[var(--color-text-muted)]">
+              {formatDate(record.clinicalDate)}
             </span>
           </div>
 
-          <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-3">
-            {record.summary}
-          </p>
+          {/* Title */}
+          <h2 className="font-heading font-bold text-lg text-[var(--color-text-primary)]">
+            {record.title}
+          </h2>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--color-text-muted)]">
-            <span>🏥 {record.facility}</span>
-            <span>👤 {record.doctor}</span>
-
-            {record.hasDocument && record.documentId && (
-              <button
-                type="button"
-                onClick={() => onViewDocument?.(record.documentId!, record.title)}
-                className="text-[var(--color-brand-600)] font-semibold hover:underline flex items-center gap-1 ml-auto"
-              >
-                <span>View Attached Document</span>
-                <ExternalLink size={12} />
-              </button>
+          {/* Facility & Clinician Info */}
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--color-text-secondary)] font-mono">
+            <div className="flex items-center gap-1.5">
+              <Building2 size={12} className="text-[var(--color-text-muted)]" />
+              <span>Facility: <strong className="text-[var(--color-text-primary)] font-medium">{record.facility}</strong></span>
+            </div>
+            {record.doctor && (
+              <div className="flex items-center gap-1.5">
+                <UserRound size={12} className="text-[var(--color-text-muted)]" />
+                <span>Clinician: <strong className="text-[var(--color-text-primary)] font-medium">{record.doctor}</strong></span>
+              </div>
             )}
           </div>
 
-          {record.tags && record.tags.length > 0 && (
-            <div className="mt-3 pt-2 border-t border-[var(--color-border)] flex flex-wrap gap-1.5">
-              {record.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-surface-muted)] text-[var(--color-text-muted)] font-medium"
-                >
-                  #{tag}
-                </span>
-              ))}
+          {/* Key Details Inset Container */}
+          {record.summary && (
+            <div className="mt-4 p-4 rounded-xl bg-[var(--color-surface-container-low)] border border-[var(--color-border-subtle)]/70">
+              <div className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-bold mb-1.5">
+                Clinical Details
+              </div>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                {record.summary}
+              </p>
             </div>
           )}
+
+          {/* Actions & Tags Footer */}
+          <div className="mt-4 pt-3 border-t border-[var(--color-border-subtle)] flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              {record.hasDocument && record.documentId ? (
+                <button
+                  type="button"
+                  onClick={() => onViewDocument?.(record.documentId!, record.title)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-surface-container-high)] text-[var(--color-text-primary)] hover:bg-[var(--color-timeline-node-bg)] text-xs font-semibold transition-colors cursor-pointer border border-[var(--color-border-subtle)]"
+                >
+                  <ExternalLink size={13} />
+                  <span>View Original PDF</span>
+                </button>
+              ) : null}
+
+              <Link
+                href="/dashboard/ai"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] hover:opacity-90 text-xs font-semibold transition-opacity border border-[#F9DECB]"
+              >
+                <Bot size={13} />
+                <span>Explain with AI</span>
+              </Link>
+            </div>
+
+            {record.tags && record.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {record.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--color-surface-container-high)] text-[var(--color-text-muted)]"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -156,9 +192,8 @@ export default function TimelineItem({
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString("en-IN", {
-      weekday: "short",
+      month: "long",
       day: "numeric",
-      month: "short",
       year: "numeric",
     });
   } catch {

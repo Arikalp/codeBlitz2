@@ -15,19 +15,19 @@ interface StatusBadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  success: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  warning: "bg-amber-50  text-amber-800  border-amber-200",
-  error:   "bg-red-50    text-red-800    border-red-200",
-  info:    "bg-[var(--color-brand-50)] text-[var(--color-accent-500)] border-[var(--color-border)]",
-  neutral: "bg-stone-50  text-stone-700  border-stone-200",
-  purple:  "bg-orange-50 text-orange-800 border-orange-200",
+  success: "bg-[var(--color-badge-verified-bg)] text-[var(--color-badge-verified-text)] border-[#D4EAD9]",
+  warning: "bg-[var(--color-badge-consult-bg)] text-[var(--color-badge-consult-text)] border-[#F9DECB]",
+  error:   "bg-[var(--color-error-container)] text-[var(--color-error-text)] border-[var(--color-error-container)]",
+  info:    "bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] border-[#F9DECB]",
+  neutral: "bg-[var(--color-badge-lab-bg)] text-[var(--color-badge-lab-text)] border-[#EAE4D7]",
+  purple:  "bg-[var(--color-badge-lab-bg)] text-[var(--color-badge-lab-text)] border-[#EAE4D7]",
 };
 
 export default function StatusBadge({ label, variant, className = "" }: StatusBadgeProps) {
   return (
     <span
       className={[
-        "inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-xs font-medium",
+        "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[11px] font-semibold tracking-wider uppercase",
         variantClasses[variant],
         className,
       ].join(" ")}

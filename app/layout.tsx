@@ -6,20 +6,26 @@
  */
 
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-// ─── Font ─────────────────────────────────────────────────────────────────
+// ─── Fonts ─────────────────────────────────────────────────────────────────
 
-const inter = Inter({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-heading",
+  display: "swap",
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
   display: "swap",
 });
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -50,8 +56,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} scroll-smooth`}>
-      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${plusJakartaSans.variable} ${jetBrainsMono.variable} scroll-smooth`}
+    >
+      <body className="min-h-screen flex flex-col bg-[var(--color-surface-canvas)] text-[var(--color-text-primary)] font-sans antialiased selection:bg-[var(--color-terracotta-100)] selection:text-[var(--color-terracotta-700)]">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

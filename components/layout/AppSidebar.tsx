@@ -67,103 +67,118 @@ export default function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
       <aside
         id="app-sidebar"
         className={[
-          "fixed top-0 left-0 z-40 flex h-full w-64 flex-col border-r border-[var(--color-border)]",
-          "bg-[var(--color-surface)] transition-transform duration-300 ease-in-out",
+          "fixed top-0 left-0 z-40 flex h-full w-64 flex-col border-r border-[var(--color-border-subtle)]",
+          "bg-[var(--color-surface-container-low)] transition-transform duration-300 ease-in-out",
           "lg:translate-x-0 lg:static lg:z-auto",
           isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full",
         ].join(" ")}
         aria-label="App navigation"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border-subtle)]">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 font-bold text-[var(--color-accent-500)] text-lg"
+            className="flex items-center gap-2.5 group"
             onClick={onClose}
           >
-            <Stethoscope size={22} strokeWidth={2} />
-            <span className="font-mono tracking-tight">HealthSetu</span>
+            <div className="w-9 h-9 rounded-lg bg-[var(--color-badge-consult-bg)] border border-[var(--color-border-subtle)] flex items-center justify-center text-[var(--color-primary-container)] group-hover:scale-105 transition-transform">
+              <Stethoscope size={20} strokeWidth={2.2} />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-heading font-bold text-base text-[var(--color-text-primary)] tracking-tight leading-tight">
+                HealthSetu
+              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+                Clinical Record
+              </span>
+            </div>
           </Link>
           <button
             type="button"
             onClick={onClose}
-            className="lg:hidden p-1 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-muted)] transition-colors"
+            className="lg:hidden p-1.5 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-container-high)] transition-colors"
             aria-label="Close menu"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* Role badge */}
-        <div className="mx-4 mt-3 px-3 py-1.5 rounded-md bg-[var(--color-brand-50)] border border-[var(--color-border)] text-xs text-[var(--color-accent-500)] font-semibold flex items-center justify-between">
-          <span>Role: {user?.role ? user.role.toUpperCase() : "PATIENT"}</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-        </div>
-
-        {/* User mini-card */}
-        <div className="mx-4 mt-3 p-3 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
-          <div className="flex items-center gap-3">
-            <div
-              className="h-9 w-9 flex-shrink-0 rounded-md flex items-center justify-center bg-[var(--color-brand-300)] text-[var(--color-text-primary)] text-sm font-bold"
-            >
-              {initial}
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{name}</p>
-              <p className="text-xs text-[var(--color-text-muted)] truncate">{email}</p>
-            </div>
-          </div>
-        </div>
-
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Primary navigation">
-          <ul className="space-y-1" role="list">
+        <div className="p-3">
+          <span className="px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] block mb-1.5">
+            Patient Care
+          </span>
+          <nav className="flex flex-col gap-1" aria-label="Primary navigation">
             {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
               const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
               return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    onClick={onClose}
-                    className={[
-                      "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150",
-                      active
-                        ? "bg-[var(--color-accent-500)] text-white shadow-sm"
-                        : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-primary)]",
-                    ].join(" ")}
-                    aria-current={active ? "page" : undefined}
-                  >
-                    <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
-                    {label}
-                  </Link>
-                </li>
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={onClose}
+                  className={[
+                    "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all",
+                    active
+                      ? "bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] font-semibold border border-[#F9DECB] shadow-[0_1px_3px_rgba(45,37,32,0.03)]"
+                      : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)]",
+                  ].join(" ")}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <Icon size={18} strokeWidth={active ? 2.2 : 1.8} className={active ? "text-[var(--color-primary-container)]" : ""} />
+                  <span>{label}</span>
+                </Link>
               );
             })}
-          </ul>
-        </nav>
+          </nav>
 
-        {/* Footer */}
-        <div className="px-3 py-4 border-t border-[var(--color-border)] space-y-1">
-          <Link
-            href="/dashboard/settings"
-            onClick={onClose}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-text-primary)] transition-colors"
-          >
-            <Settings size={18} strokeWidth={1.8} />
-            Settings
-          </Link>
-          <button
-            id="sidebar-signout-btn"
-            type="button"
-            onClick={() => {
-              onClose();
-              logout();
-            }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
-          >
-            <LogOut size={18} strokeWidth={1.8} />
-            Sign Out
-          </button>
+          <span className="px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] block mt-5 mb-1.5">
+            Preferences
+          </span>
+          <nav className="flex flex-col gap-1">
+            <Link
+              href="/dashboard/settings"
+              onClick={onClose}
+              className={[
+                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-container-high)] hover:text-[var(--color-text-primary)] transition-all",
+                pathname === "/dashboard/settings" ? "bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] font-semibold border border-[#F9DECB]" : "",
+              ].join(" ")}
+            >
+              <Settings size={18} strokeWidth={1.8} />
+              <span>Settings</span>
+            </Link>
+            <button
+              id="sidebar-signout-btn"
+              type="button"
+              onClick={() => {
+                onClose();
+                logout();
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-[var(--color-error)] hover:bg-[var(--color-error-container)]/50 transition-colors text-left"
+            >
+              <LogOut size={18} strokeWidth={1.8} />
+              <span>Sign Out</span>
+            </button>
+          </nav>
+        </div>
+
+        {/* Patient preview card at bottom */}
+        <div className="mt-auto p-3 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-card)]">
+          <div className="flex items-center gap-2.5 p-1 rounded-xl">
+            <div className="w-9 h-9 rounded-full bg-[var(--color-timeline-node-bg)] border border-[var(--color-border-subtle)] flex items-center justify-center font-heading text-sm font-semibold text-[var(--color-text-primary)] flex-shrink-0">
+              {initial}
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="font-heading text-xs font-semibold text-[var(--color-text-primary)] truncate">
+                {name}
+              </span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary-sage)]" />
+                <span className="font-mono text-[10px] text-[var(--color-text-muted)] truncate">
+                  {user?.role ? user.role.toUpperCase() : "PATIENT"}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
     </>

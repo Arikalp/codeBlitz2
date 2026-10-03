@@ -77,30 +77,27 @@ export default function ProfilePage() {
         )}
 
         {/* Profile Hero Header */}
-        <Card className="relative overflow-hidden">
+        <Card className="relative overflow-hidden border border-[var(--color-border-subtle)] bg-[var(--color-surface-card)]">
           <div
             aria-hidden="true"
             className="absolute top-0 left-0 right-0 h-24 rounded-t-2xl"
             style={{
-              background: "linear-gradient(135deg, var(--color-brand-600), var(--color-accent-500))",
+              background: "linear-gradient(135deg, var(--color-primary-container), var(--color-timeline-connector), var(--color-primary-fixed))",
             }}
           />
-          <div className="relative pt-12 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+          <div className="relative pt-12 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
               <div
-                className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-2xl border-4 border-[var(--color-surface)] text-3xl font-bold text-white shadow-md"
-                style={{
-                  background: "linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500))",
-                }}
+                className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-2xl border-4 border-[var(--color-surface-card)] text-3xl font-heading font-bold bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] shadow-md"
               >
-                {currentName.charAt(0)}
+                {currentName.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 pb-1">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
+                  <h1 className="text-2xl font-heading font-bold text-[var(--color-text-primary)]">
                     {currentName}
                   </h1>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-[var(--color-badge-consult-bg)] text-[var(--color-badge-consult-text)] border border-[#F9DECB]">
                     {user?.role ? user.role.toUpperCase() : "PATIENT"}
                   </span>
                 </div>

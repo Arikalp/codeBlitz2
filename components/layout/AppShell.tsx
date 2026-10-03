@@ -21,7 +21,7 @@ export default function AppShell({ title, children }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--color-background)]">
+    <div className="flex h-screen overflow-hidden bg-[var(--color-surface-canvas)]">
       {/* Sidebar */}
       <AppSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

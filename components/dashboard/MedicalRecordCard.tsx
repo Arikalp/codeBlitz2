@@ -1,7 +1,8 @@
 /**
  * components/dashboard/MedicalRecordCard.tsx
  *
- * Card displaying a single medical record in a list.
+ * Card displaying a single clinical record in the Warm Parchment Clinical style.
+ * Features structured metadata, category icons, and an inset key details sub-card.
  */
 
 import {
@@ -14,7 +15,8 @@ import {
   Building2,
   CalendarDays,
   UserRound,
-  ChevronRight,
+  CheckCircle,
+  FileCheck,
 } from "lucide-react";
 import { categoryBadge } from "@/components/ui/StatusBadge";
 
@@ -29,19 +31,6 @@ const CATEGORY_ICONS: Record<string, typeof FileText> = {
   vaccination:       Syringe,
   consultation:      Stethoscope,
   other:             FileText,
-};
-
-const CATEGORY_COLORS: Record<string, string> = {
-  prescription:      "bg-[var(--color-brand-50)] text-[var(--color-accent-500)]",
-  lab_report:        "bg-[var(--color-brand-50)] text-[var(--color-accent-500)]",
-  ct_mri_report:     "bg-amber-50 text-amber-600",
-  xray_report:       "bg-amber-50 text-amber-600",
-  imaging:           "bg-amber-50 text-amber-600",
-  discharge_summary: "bg-slate-100 text-slate-600",
-  consultation_note: "bg-stone-50 text-stone-700",
-  vaccination:       "bg-emerald-50 text-emerald-600",
-  consultation:      "bg-stone-50 text-stone-700",
-  other:             "bg-gray-100 text-gray-600",
 };
 
 interface MedicalRecordCardProps {
@@ -63,57 +52,80 @@ export default function MedicalRecordCard({ record, onClick }: MedicalRecordCard
   const Icon = CATEGORY_ICONS[record.category] || FileText;
 
   return (
-    <button
-      type="button"
+    <article
       onClick={onClick}
-      className="w-full text-left group flex items-start gap-4 p-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-brand-300)] hover:shadow-md transition-all duration-200"
+      className="w-full text-left group flex items-start gap-4 p-4 sm:p-5 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-card)] hover:border-[var(--color-primary-container)]/50 hover:shadow-warm transition-all duration-200 cursor-pointer relative"
     >
-      {/* Icon */}
+      {/* Category Node Icon */}
       <div
-        className={[
-          "flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-md",
-          CATEGORY_COLORS[record.category] || "bg-gray-50 text-gray-600",
-        ].join(" ")}
+        className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[var(--color-timeline-node-bg)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] flex-shrink-0 flex items-center justify-center shadow-xs transition-transform group-hover:scale-105"
         aria-hidden="true"
       >
-        <Icon size={18} strokeWidth={1.8} />
+        <Icon size={20} strokeWidth={2} className="text-[var(--color-primary-container)]" />
       </div>
 
-      {/* Content */}
+      {/* Content Area */}
       <div className="flex-1 min-w-0">
-        <div className="flex flex-wrap items-center gap-2 mb-1">
-          <span className="font-semibold text-sm text-[var(--color-text-primary)] truncate">
-            {record.title}
-          </span>
-          {categoryBadge(record.category)}
-        </div>
-
-        <p className="text-xs text-[var(--color-text-muted)] line-clamp-2 mb-2">
-          {record.summary}
-        </p>
-
-        <div className="flex flex-wrap gap-3 text-xs text-[var(--color-text-muted)]">
-          <span className="flex items-center gap-1">
-            <CalendarDays size={11} /> {formatDate(record.clinicalDate)}
-          </span>
-          <span className="flex items-center gap-1">
-            <Building2 size={11} /> {record.facility}
-          </span>
-          <span className="flex items-center gap-1">
-            <UserRound size={11} /> {record.doctor}
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+          <div className="flex items-center gap-2">
+            {categoryBadge(record.category)}
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--color-badge-verified-bg)] text-[var(--color-secondary-sage)] border border-[#D4EAD9] text-[11px] font-mono font-semibold uppercase tracking-wider">
+              <CheckCircle size={11} /> Verified
+            </span>
+          </div>
+          <span className="font-mono text-xs text-[var(--color-text-muted)]">
+            {formatDate(record.clinicalDate)}
           </span>
         </div>
+
+        <h3 className="font-heading font-bold text-base text-[var(--color-text-primary)] group-hover:text-[var(--color-primary-container)] transition-colors">
+          {record.title}
+        </h3>
+
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--color-text-secondary)] mt-1 font-mono">
+          <span className="flex items-center gap-1.5">
+            <Building2 size={12} className="text-[var(--color-text-muted)]" />
+            <span>Facility: <strong className="text-[var(--color-text-primary)] font-medium">{record.facility}</strong></span>
+          </span>
+          {record.doctor && (
+            <span className="flex items-center gap-1.5">
+              <UserRound size={12} className="text-[var(--color-text-muted)]" />
+              <span>Clinician: <strong className="text-[var(--color-text-primary)] font-medium">{record.doctor}</strong></span>
+            </span>
+          )}
+        </div>
+
+        {/* Key Summary Inset Box */}
+        {record.summary && (
+          <div className="mt-3 bg-[var(--color-surface-container-low)] border border-[var(--color-border-subtle)]/70 rounded-lg p-3">
+            <span className="font-mono text-[10px] text-[var(--color-text-muted)] uppercase font-bold tracking-wider block mb-1">
+              Clinical Summary
+            </span>
+            <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+              {record.summary}
+            </p>
+          </div>
+        )}
+
+        {record.hasDocument && (
+          <div className="mt-2.5 flex items-center gap-1 text-[11px] font-mono text-[var(--color-primary-container)] font-semibold">
+            <FileCheck size={13} />
+            <span>Original digital scan attached · Click to view</span>
+          </div>
+        )}
       </div>
-
-      {/* Chevron */}
-      <ChevronRight
-        size={16}
-        className="flex-shrink-0 mt-1 text-[var(--color-text-muted)] group-hover:text-[var(--color-brand-500)] transition-colors"
-      />
-    </button>
+    </article>
   );
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  try {
+    return new Date(iso).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
 }

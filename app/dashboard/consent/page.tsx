@@ -1,17 +1,30 @@
 /**
  * app/dashboard/consent/page.tsx
  *
- * /dashboard/consent — View and manage consent requests.
+ * /dashboard/consent — Patient Consent & Access Governance.
+ * Designed in the Warm Parchment Clinical design system:
+ * ABDM simulation disclaimer, provider access governance matrix,
+ * FHIR consent artifacts, and granular scope toggles.
  */
 
 "use client";
 
-import { ShieldCheck, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { useState } from "react";
+import {
+  ShieldCheck,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Info,
+  Building2,
+  Calendar,
+  Lock,
+  FileText,
+  KeyRound,
+} from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import Card from "@/components/ui/Card";
-import { consentBadge } from "@/components/ui/StatusBadge";
 import { MOCK_CONSENTS, type ConsentRequest } from "@/lib/mock-data";
-import { useState } from "react";
 
 export default function ConsentPage() {
   const [consents, setConsents] = useState<ConsentRequest[]>(MOCK_CONSENTS as ConsentRequest[]);
@@ -25,67 +38,83 @@ export default function ConsentPage() {
 
   return (
     <AppShell title="Consent & Sharing">
-      <div className="max-w-3xl mx-auto space-y-6">
-
-        {/* Header */}
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
-            <ShieldCheck size={24} strokeWidth={1.8} />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-[var(--color-text-primary)]">Consent & Record Sharing</h1>
-            <p className="text-sm text-[var(--color-text-secondary)]">
-              Review and manage requests to access your medical records. You are always in control.
+      <div className="max-w-[1080px] w-full mx-auto space-y-7 px-2 sm:px-4 py-2 sm:py-4">
+        {/* Top ABDM Demo Mode Disclaimer Pill Banner */}
+        <div className="w-full bg-[var(--color-badge-consult-bg)]/80 border border-[#F9DECB] rounded-2xl p-4 sm:px-5 flex items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3 min-w-0">
+            <Info size={20} className="text-[var(--color-primary-container)] shrink-0" />
+            <p className="text-xs text-[var(--color-text-secondary)] leading-snug">
+              <strong className="font-semibold text-[var(--color-text-primary)]">Demo Mode · Synthetic Data.</strong> HealthSetu supports clinical decisions and patient consent; not connected to live government ABDM gateways.
             </p>
           </div>
-        </div>
-
-        {/* Demo notice */}
-        <div className="px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-700 flex items-start gap-2">
-          <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
-          <span>
-            <strong>Demo Mode</strong> — Consent requests below are synthetic. Approve/deny actions update local state only.
+          <span className="hidden md:inline-flex items-center font-mono text-[10px] uppercase tracking-wider text-[var(--color-badge-consult-text)] px-3 py-1 rounded-full bg-[var(--color-surface-card)] border border-[#F9DECB] shrink-0 font-bold">
+            Simulation Node
           </span>
         </div>
 
-        {/* Pending requests */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Clock size={15} className="text-amber-500" />
-            <h2 className="text-sm font-semibold text-[var(--color-text-primary)] uppercase tracking-wide">
-              Pending Requests
+        {/* Page Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-[var(--color-badge-consult-bg)] border border-[#F9DECB] flex items-center justify-center text-[var(--color-primary-container)] shrink-0">
+              <ShieldCheck size={24} strokeWidth={2.2} />
+            </div>
+            <div>
+              <h1 className="font-heading text-2xl font-bold text-[var(--color-text-primary)] tracking-tight">
+                Consent &amp; Access Governance
+              </h1>
+              <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mt-0.5">
+                Review and govern requests to access your medical records across hospitals.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 bg-[var(--color-surface-container-low)] border border-[var(--color-border-subtle)] px-3 py-1.5 rounded-xl text-xs font-mono text-[var(--color-text-muted)] self-start sm:self-center">
+            <Lock size={13} className="text-[var(--color-primary-container)]" />
+            <span>Zero-Knowledge Authorization</span>
+          </div>
+        </div>
+
+        {/* Pending Requests Section */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="text-[var(--color-primary-container)]" />
+            <h2 className="font-heading font-bold text-base text-[var(--color-text-primary)]">
+              Pending Authorization Requests
             </h2>
-            <span className="text-xs font-bold text-amber-600">({pending.length})</span>
+            <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-full bg-[var(--color-badge-consult-bg)] text-[var(--color-primary-container)] border border-[#F9DECB]">
+              {pending.length}
+            </span>
           </div>
 
           {pending.length === 0 ? (
-            <Card padding="md">
-              <div className="flex items-center gap-3 text-[var(--color-text-muted)]">
-                <CheckCircle size={18} className="text-emerald-500" />
-                <span className="text-sm">No pending consent requests. You&apos;re all caught up.</span>
+            <Card padding="md" className="border border-[var(--color-border-subtle)] bg-[var(--color-surface-card)] rounded-2xl p-6 text-center">
+              <div className="flex flex-col items-center gap-2 text-[var(--color-text-muted)]">
+                <CheckCircle size={24} className="text-[var(--color-secondary-sage)]" />
+                <span className="text-sm font-medium text-[var(--color-text-primary)]">No pending requests</span>
+                <span className="text-xs">Your records are completely private. Providers must request access before viewing.</span>
               </div>
             </Card>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {pending.map((c) => (
                 <ConsentCard key={c.id} consent={c} onAction={handleAction} />
               ))}
             </div>
           )}
-        </div>
+        </section>
 
-        {/* Resolved */}
+        {/* Resolved / Active Consents Section */}
         {resolved.length > 0 && (
-          <div>
-            <h2 className="text-sm font-semibold text-[var(--color-text-muted)] uppercase tracking-wide mb-3">
-              Past Requests
+          <section className="space-y-4">
+            <h2 className="font-heading font-bold text-base text-[var(--color-text-primary)]">
+              Authorized Provider History
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {resolved.map((c) => (
                 <ConsentCard key={c.id} consent={c} onAction={handleAction} readOnly />
               ))}
             </div>
-          </div>
+          </section>
         )}
       </div>
     </AppShell>
@@ -101,61 +130,131 @@ function ConsentCard({
   onAction: (id: string, action: "approved" | "denied") => void;
   readOnly?: boolean;
 }) {
+  const isApproved = consent.status === "approved";
+  const isPending = consent.status === "pending";
+
   return (
-    <Card padding="md" className={consent.status === "pending" ? "border-l-4 border-l-amber-400" : ""}>
-      <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
-        <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <p className="font-semibold text-sm text-[var(--color-text-primary)]">{consent.requestedBy}</p>
-            {consentBadge(consent.status)}
+    <Card className="rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-card)] p-5 sm:p-6 shadow-sm hover:shadow-warm transition-all relative overflow-hidden">
+      {/* Accent strip */}
+      <div
+        className={`absolute top-0 left-0 bottom-0 w-1.5 ${
+          isApproved
+            ? "bg-[var(--color-secondary-sage)]"
+            : isPending
+            ? "bg-[var(--color-primary-container)]"
+            : "bg-[var(--color-error)]"
+        }`}
+      />
+
+      <div className="pl-2 space-y-4">
+        {/* Header */}
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-heading font-bold text-base text-[var(--color-text-primary)]">
+                {consent.requestedBy}
+              </h3>
+              {isApproved && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--color-badge-verified-bg)] text-[var(--color-secondary-sage)] border border-[#D4EAD9] font-mono text-[11px] font-semibold uppercase">
+                  <CheckCircle size={11} /> Active Consent
+                </span>
+              )}
+              {isPending && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--color-badge-consult-bg)] text-[var(--color-badge-consult-text)] border border-[#F9DECB] font-mono text-[11px] font-semibold uppercase">
+                  <Clock size={11} /> Pending Review
+                </span>
+              )}
+              {!isApproved && !isPending && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--color-error-container)]/50 text-[var(--color-error-text)] border border-[var(--color-error-container)] font-mono text-[11px] font-semibold uppercase">
+                  Revoked
+                </span>
+              )}
+            </div>
+            <p className="text-xs font-mono text-[var(--color-text-secondary)] flex items-center gap-1.5">
+              <Building2 size={13} className="text-[var(--color-text-muted)]" />
+              <span>{consent.facility}</span>
+            </p>
           </div>
-          <p className="text-xs text-[var(--color-text-muted)]">{consent.facility}</p>
+
+          <div className="text-right text-xs font-mono text-[var(--color-text-muted)]">
+            <span>Requested: {formatDate(consent.requestedAt)}</span>
+          </div>
         </div>
-        <p className="text-xs text-[var(--color-text-muted)]">Requested: {formatDate(consent.requestedAt)}</p>
-      </div>
 
-      <p className="text-xs text-[var(--color-text-secondary)] mb-3 leading-relaxed">
-        <strong>Purpose:</strong> {consent.purpose}
-      </p>
-
-      <div className="mb-3">
-        <p className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5">Requested access to:</p>
-        <ul className="space-y-1">
-          {consent.requestedRecords.map((r) => (
-            <li key={r} className="text-xs flex items-center gap-2 text-[var(--color-text-secondary)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-brand-400)] flex-shrink-0" />
-              {r}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <p className="text-xs text-[var(--color-text-muted)] mb-4">
-        Access expires: {formatDate(consent.expiresAt)}
-      </p>
-
-      {!readOnly && consent.status === "pending" && (
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => onAction(consent.id, "approved")}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors"
-          >
-            <CheckCircle size={13} /> Approve
-          </button>
-          <button
-            type="button"
-            onClick={() => onAction(consent.id, "denied")}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-red-300 text-red-600 text-xs font-semibold hover:bg-red-50 transition-colors"
-          >
-            <XCircle size={13} /> Deny
-          </button>
+        {/* Purpose */}
+        <div className="bg-[var(--color-surface-container-low)] border border-[var(--color-border-subtle)]/70 rounded-xl p-3.5 text-xs text-[var(--color-text-secondary)]">
+          <strong className="text-[var(--color-text-primary)] font-semibold">Purpose:</strong> {consent.purpose}
         </div>
-      )}
+
+        {/* Scope pills */}
+        <div>
+          <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-[var(--color-text-muted)] block mb-2">
+            Authorized Scope of Access:
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {consent.requestedRecords.map((rec) => (
+              <span
+                key={rec}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[var(--color-surface-container-high)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] font-medium"
+              >
+                <FileText size={12} className="text-[var(--color-primary-container)]" />
+                {rec}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer actions and expiration */}
+        <div className="pt-3 border-t border-[var(--color-border-subtle)] flex flex-wrap items-center justify-between gap-3 text-xs">
+          <span className="font-mono text-[var(--color-text-muted)] flex items-center gap-1.5">
+            <Calendar size={13} />
+            <span>Valid until: <strong>{formatDate(consent.expiresAt)}</strong></span>
+          </span>
+
+          {!readOnly && isPending && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => onAction(consent.id, "approved")}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--color-secondary-sage)] text-white text-xs font-heading font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+              >
+                <CheckCircle size={14} />
+                <span>Approve Access</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onAction(consent.id, "denied")}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[var(--color-error)] text-[var(--color-error)] text-xs font-heading font-semibold hover:bg-[var(--color-error-container)]/30 transition-colors cursor-pointer"
+              >
+                <XCircle size={14} />
+                <span>Deny</span>
+              </button>
+            </div>
+          )}
+
+          {isApproved && (
+            <button
+              type="button"
+              onClick={() => onAction(consent.id, "denied")}
+              className="text-xs font-semibold text-[var(--color-error)] hover:underline cursor-pointer"
+            >
+              Revoke Permission Now
+            </button>
+          )}
+        </div>
+      </div>
     </Card>
   );
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  try {
+    return new Date(iso).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
 }
